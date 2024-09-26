@@ -1,21 +1,21 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models import db, User, Profile, Like, Message
+from flask import Flask, request, jsonify, Blueprint
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from .models import db, User, Profile, Like, Message
+import requests
+import math
+import os
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tinder_app.db'
-app.config['JWT_SECRET_KEY'] = 'your_secret_key'
-db.init_app(app)
+api = Blueprint('routes', __name__)
 
-@app.before_first_request
+@api.before_app_request
 def create_tables():
     db.create_all()
 
 # User registration
-@app.route('/api/users/register', methods=['POST'])
+@api.route('/users/register', methods=['POST'])
 def register():
     data = request.get_json()
     new_user = User(username=data['username'], email=data['email'], password=data['password'])
@@ -30,7 +30,7 @@ def register():
     return jsonify({"message": "User registered successfully"}), 201
 
 
-@app.route('/api/users/login', methods=['POST'])
+@api.route('/users/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = User.query.filter_by(email=data['email'], password=data['password']).first()
@@ -40,7 +40,7 @@ def login():
     return jsonify({"message": "Bad credentials"}), 401
 
 
-@app.route('/api/users/<int:user_id>/profile', methods=['GET'])
+@api.route('/users/<int:user_id>/profile', methods=['GET'])
 @jwt_required()
 def get_user_profile(user_id):
     user = User.query.get_or_404(user_id)
@@ -51,14 +51,15 @@ def get_user_profile(user_id):
         "bio": profile.bio,
         "age": profile.age,
         "breed": profile.breed,
-        "location": profile.location,
+        "city": profile.city,
+        "state": profile.state,
         "temperment": profile.temperment,
         "looking_for": profile.looking_for,
         "photos": profile.photos.split(',') if profile.photos else []
     }), 200
 
 
-@app.route('/api/users/<int:user_id>/profile', methods=['PUT'])
+@api.route('/users/<int:user_id>/profile', methods=['PUT'])
 @jwt_required()
 def update_user_profile(user_id):
     data = request.get_json()
@@ -66,7 +67,8 @@ def update_user_profile(user_id):
     profile.bio = data.get('bio', profile.bio)
     profile.age = data.get('age', profile.age)
     profile.breed=data.get('breed', profile.breed)
-    profile.location=data.get('location', profile.location)
+    profile.city=data.get('city', profile.city)
+    profile.state=data.get('state', profile.state)
     profile.temperment=data.get('temperment', profile.temperment)
     profile.looking_for=data.get('looking_for', profile.looking_for)
     profile.photos = ','.join(data.get('photos', []))  # This assumes URLS might need change later
@@ -74,7 +76,7 @@ def update_user_profile(user_id):
     return jsonify({"message": "Profile updated successfully"}), 200
 
 # Swipe Right (Like)
-@app.route('/api/swipe/right', methods=['POST'])
+@api.route('/swipe/right', methods=['POST'])
 @jwt_required()
 def swipe_right():
     data = request.get_json()
@@ -84,7 +86,7 @@ def swipe_right():
     return jsonify({"message": "You liked the user"}), 200
 
 # Get Matches
-@app.route('/api/users/<int:user_id>/matched', methods=['GET'])
+@api.route('/users/<int:user_id>/matched', methods=['GET'])
 @jwt_required()
 def get_matches(user_id):
     likes = Like.query.filter_by(user_id=user_id).all()
@@ -92,7 +94,7 @@ def get_matches(user_id):
     return jsonify({"matches": matches}), 200
 
 # Send a Message
-@app.route('/api/messages', methods=['POST'])
+@api.route('/messages', methods=['POST'])
 @jwt_required()
 def send_message():
     data = request.get_json()
@@ -102,7 +104,7 @@ def send_message():
     return jsonify({"message": "Message sent successfully"}), 200
 
 # Get Messages
-@app.route('/api/messages/<int:user_id>/<int:partner_user_id>', methods=['GET'])
+@api.route('/messages/<int:user_id>/<int:partner_user_id>', methods=['GET'])
 @jwt_required()
 def get_messages(user_id, partner_user_id):
     messages = Message.query.filter(
@@ -111,5 +113,34 @@ def get_messages(user_id, partner_user_id):
     ).all()
     return jsonify([{"from": msg.from_user_id, "content": msg.content, "timestamp": msg.timestamp} for msg in messages]), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
+def get_geo_location(city, state):
+    api_key = os.environ.get('Geolocation_api_key')
+    query = f"{city}, {state}"
+    url = f"https://api.opencagedata.com/geocode/v1/json?q={query}&key={api_key}"
+
+    response = requests.get(url)
+    data = response.json()
+
+    if data['results']:
+        location = data['results'][0]['geometry']
+        return location['lat'], location['lng']
+    else:
+        return None
+    
+def haversine(lat1, lon1, lat2, lon2):
+    # copied the haversine formula off the internet... should put lat long to miles
+    R = 3956
+
+    lat1_rad = math.radians(lat1)
+    lon1_rad = math.radians(lon1)
+    lat2_rad = math.radians(lat2)
+    lon2_rad = math.radians(lon2)
+
+    dlat = lat2_rad - lat1_rad
+    dlon = lon2_rad - lon1_rad
+    a = math.sin(dlat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2)**2
+    c = 2 * math.asin(math.sqrt(a))
+
+    distance = R * c
+    return distance
+
