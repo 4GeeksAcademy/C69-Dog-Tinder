@@ -1,3 +1,191 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')
+
+
+body {
+    background: url("images/oldpaprer.jpeg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgba(rgb(45, 43, 43));
+}
+.nav {
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    line-height: 100px;
+    background: linear-gradient(rgb(45, 43, 43))transparent;
+    z-index: 100;
+}
+.nav-logo p{
+    color: rgb(250, 250, 250);
+    font-size: 25px;
+    font-weight: 600;
+}
+.nav-menu ul{
+    display: flex;
+}
+.nav-menu ul li {
+    list-style-type: none;
+}
+.nav-menu ul li .link{
+    text-decoration: none;
+    font-weight: 500;
+    color: white;
+    padding: 15px;
+    margin: 0 25px;
+}
+.link:hover, .active{
+    border-bottom: 2px solid white;
+}
+.nav-button .btn {
+    width: 130px;
+    height: 40px;
+    font-weight: 500;
+    background: rgba(rgb(45, 43, 43));
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    Transition: .3s ease;
+}
+.btn:hover{
+    background: grey;
+}
+#registerbtn {
+    margin-left: 15px;
+}
+.btn.white-btn {
+    background: rgb(248, 247, 247);
+}
+.btn.btn.white-btn:hover {
+    background: grey;
+}
+.nav-menu-btn {
+    display: none;
+}
+.form-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 675px;
+    height: 500px;
+    overflow: hidden;
+    z-index: 2;
+}
+.login-container{
+    position: absolute;
+    left: 70px;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    transition: .5s ease-in-out;
+}
+.register-container{
+    position: absolute;
+    right: 1000px;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    transition: .5s ease-in-out;
+}
+.top span{
+    color: white;
+    font-size: medium;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+}
+.top span a{
+    font-weight: 500;
+    color: white;
+    margin-left: 5px;
+}
+header{
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    padding: 10px 0 30px;
+}
+.two-forms{
+display: flex;
+}
+.two-forms .input-box{
+    font-size: 15px;
+    background: rgba(rgb(182, 180, 180));
+    color:white;
+    width: 100%;
+    height: 70px;
+    padding: 0px 60px 0px 20px;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    Transition: .2s ease;
+}
+.input-field{
+    font-size: 15px;
+    background: rgba(rgb(182, 180, 180));
+    color:white;
+    width: 90%;
+    height: 50px;
+    padding: 0 10px 0 45px;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    Transition: .2s ease;
+}
+.input-field:hover .input-field:focus{
+    background: grey;
+}
+::webkit-placeholder{
+color: white;
+}
+.input-box i{
+    position: relative;
+    top: -35px;
+    left: 17px;
+    color: rgb(66, 62, 62);
+}
+.submit{
+    font-size: 15px;
+    font-weight: 500;
+    color: black;
+    height: 45px;
+    width: 100%;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    background: rgb(246, 245, 245);
+    cursor: pointer;
+    transition: 3s ease-in-out;
+}
+.submit:hover{
+    background: rgb(135, 132, 132);
+    box-shadow: 1px 5px 7px 1px black;
+}
+.two-col{
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-size: small;
+    margin-top: none;
+}
+two-col .one{
+    display: flex;
+    gap: 5px;
+}
+.two label a{
+    text-decoration: none;
+    color: white;
+}
+.two label a:hover{
+    text-decoration: underline;
+} */
