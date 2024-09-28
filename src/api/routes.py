@@ -7,8 +7,10 @@ from .models import db, User, Profile, Like, Message
 import requests
 import math
 import os
+from app import app
 
 api = Blueprint('routes', __name__)
+jwt = JWTManager(app)
 
 @api.before_app_request
 def create_tables():
@@ -75,7 +77,7 @@ def update_user_profile(user_id):
     db.session.commit()
     return jsonify({"message": "Profile updated successfully"}), 200
 
-# Swipe Right (Like)
+
 @api.route('/swipe/right', methods=['POST'])
 @jwt_required()
 def swipe_right():
@@ -85,7 +87,7 @@ def swipe_right():
     db.session.commit()
     return jsonify({"message": "You liked the user"}), 200
 
-# Get Matches
+
 @api.route('/users/<int:user_id>/matched', methods=['GET'])
 @jwt_required()
 def get_matches(user_id):
@@ -93,7 +95,7 @@ def get_matches(user_id):
     matches = [like.target_user_id for like in likes]
     return jsonify({"matches": matches}), 200
 
-# Send a Message
+
 @api.route('/messages', methods=['POST'])
 @jwt_required()
 def send_message():
@@ -103,7 +105,7 @@ def send_message():
     db.session.commit()
     return jsonify({"message": "Message sent successfully"}), 200
 
-# Get Messages
+
 @api.route('/messages/<int:user_id>/<int:partner_user_id>', methods=['GET'])
 @jwt_required()
 def get_messages(user_id, partner_user_id):
