@@ -1,54 +1,124 @@
 const getState = ({ getStore, getActions, setStore }) => {
-	return {
-		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+    return {
+        store: {
+            profiles: [],
+            JWT_Token: '', 
+            messages: [],
+            matches: [],
+			userProfile: null
+        },
+        actions: {
+            
+            fetchMessages(userId, partnerUserId) {
+                const store = getStore();
+                fetch(`/api/messages/${userId}/${partnerUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}` 
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch messages');
+                    return response.json();
+                })
+                .then(data => {
+                    const messagesArea = document.getElementById('messagesArea');
+                    messagesArea.innerHTML = ''; 
+                    data.forEach(msg => {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${msg.from === userId ? 'from' : 'to'}`;
+                        messageElement.innerText = msg.content;
+                        messagesArea.appendChild(messageElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching messages:', error));
+            },
+           
+            sendMessages(userId, partnerUserId, messageInput) {
+                const messageContent = messageInput.value.trim();
+                if (messageContent) {
+                    const store = getStore();
+                    fetch('/api/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${store.JWT_Token}` 
+                        },
+                        body: JSON.stringify({
+                            fromUserId: userId,
+                            toUserId: partnerUserId,
+                            content: messageContent
+                        })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            messageInput.value = ''; // Clear input field
+                            const actions = getActions();
+                            actions.fetchMessages(userId, partnerUserId); 
+                        } else {
+                            alert('Failed to send message.');
+                        }
+                    })
+                    .catch(error => console.error('Error sending message:', error));
+                }
+            },
+			fetchUserProfile(userId) {
+                const store = getStore();
+                setStore({ isLoading: true }); // Set loading state
+                fetch(`/api/users/${userId}/profile`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch profile');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ userProfile: data }); 
+                })
+                .catch(error => console.error('Error fetching profile:', error))
 			},
-
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
-	};
+			updateUserProfile(userId, updatedProfileData) {
+                const store = getStore();
+                fetch(`/api/users/${userId}/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    },
+                    body: JSON.stringify(updatedProfileData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update profile');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ userProfile: data }); 
+                })
+                .catch(error => console.error('Error updating profile:', error));
+            },
+            
+            fetchMatches(userId) {
+                const store = getStore();
+                fetch(`/api/users/${userId}/matched`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ matches: data.matches }); 
+                })
+                .catch(error => console.error('Error fetching matches:', error));
+            }
+        }
+    }
 };
 
 export default getState;
