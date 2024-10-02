@@ -3,15 +3,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
-import { Demo } from "./pages/demo";
-import { Single } from "./pages/single";
 import injectContext from "./store/appContext";
-
 import Navbar from "./component/navbar";
-import DogProfile from "./component/DogProfile"; 
+import DogProfile from "./component/DogProfile";
 import { Footer } from "./component/footer";
+import { LoginSignUp } from "./LoginSignUp";
 
-// Example
+// Example dog profile object
 const exampleProfile = {
     username: "Buddy",
     photos: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzdKy18Gk8V7Fg66o6IUUZO-uEHzOg55QAxXeQ420JSnReEStlZU1ihqbEdKzWu_EBJPU&usqp=CAU",
@@ -22,32 +20,35 @@ const exampleProfile = {
     state: "GA",
     temperment: "Friendly",
     looking_for: "Playdates",
-    user_id: 2,  // dog ID 
+    user_id: 2,  // dog ID
 };
 
-// Definir Layout
+// Main layout component
 const Layout = () => {
     const basename = process.env.BASENAME || "";
 
-    if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
+    // Check for backend URL
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") {
+        return <BackendURL />;
+    }
 
     return (
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
+                    {/* Navbar component */}
                     <Navbar />
+
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<Single />} path="/single/:theid" />
-                        
+                        <Route element={<LoginSignUp />} path="/login" />
                         <Route
                             element={<DogProfile profile={exampleProfile} currentUserId={1} />}
                             path="/dog-profile/:id"
                         />
-
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route element={<h1>Not found!</h1>} path="*" />
                     </Routes>
+
                     <Footer />
                 </ScrollToTop>
             </BrowserRouter>
