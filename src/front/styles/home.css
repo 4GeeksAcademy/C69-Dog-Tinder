@@ -1,7 +1,227 @@
-/*
-    home.css: This website contains selectors only used in home.css
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+body {
+    background-image: url('../img/happy-pet.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgba(45, 43, 43, 0.7);
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    height: 100px; /* Needed for nav height */
+    background: linear-gradient(rgb(45, 43, 43), transparent);
+    z-index: 100;
+}
+
+.nav-logo p {
+    color: rgb(188, 182, 182);
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.nav-menu ul {
+    display: flex;
+}
+
+.nav-menu ul li {
+    list-style-type: none; /* Needed to remove bullet points */
+}
+
+.nav-menu ul li .link {
+    text-decoration: none;
+    font-weight: 500;
+    color: white;
+    padding: 15px;
+    margin: 0 25px;
+}
+
+.link:hover, .active {
+    border-bottom: 2px solid white;
+}
+
+.btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    margin-left: 10px; /* Needed if you have multiple buttons */
+    width: 130px;
+    height: 40px;
+    font-weight: 500;
+    background: rgb(45, 43, 43);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.btn:hover {
+    background: grey;
+}
+
+#registerbtn {
+    margin-left: 15px; /* Needed if used in HTML */
+}
+
+.btn.white-btn {
+    background: rgb(248, 247, 247);
+}
+
+.nav-menu-btn {
+    display: none; /* Keep if you plan to use this later */
+}
+
+.form-box {
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Arrange items in a column */
+    align-items: center;    /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    width: 675px;
+    height: 500px; 
+    overflow: hidden;
+    z-index: 2;
+}
+
+.login-container {
+    position: absolute;
+    left: 70px;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    transition: .5s ease-in-out;
+}
+
+.register-container {
+    position: relative;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    transition: .5s ease-in-out;
+}
+
+.top span {
+    color: white;
+    font-size: medium;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.top span a {
+    font-weight: 500;
+    color: white;
+    margin-left: 5px;
+}
+
+header {
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    padding: 10px 0 30px;
+}
+
+.two-forms {
+    display: flex;
+}
+
+.two-forms .input-box {
+    display: flex;
+    flex-direction: column; /* Keep if necessary */
+    align-items: center;  
+    font-size: 15px;
+    color: white;
+    width: 100%;
+    height: 70px;
+    padding: 0px 60px 0px 20px;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    transition: .2s ease; 
+}
+
+.input-field {
+    margin: 10px 0;  
+    font-size: 15px;
+    background: rgba(182, 180, 180); 
+    color: white;
+    width: 100%;
+    height: 50px;
+    padding: 0 10px 0 45px;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    transition: .2s ease; 
+}
+
+.input-field:hover,
+.input-field:focus { 
+    background: grey;
+}
+
+::placeholder { /* Use this for all browsers */
+    color: white;
+}
+
+.input-box i {
+    position: relative;
+    top: -35px;
+    left: 17px;
+    color: rgb(66, 62, 62);
+}
+
+.submit {
+    font-size: 15px;
+    font-weight: 500;
+    color: black;
+    height: 45px;
+    width: 100%; /* Keep if needed */
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    background: rgb(246, 245, 245);
+    cursor: pointer;
+    transition: 1s ease-in-out; 
+}
+
+.submit:hover {
+    background: rgb(135, 132, 132);
+}
+
+.two-col {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-size: small;
+}
+
+.two-col .one {
+    display: flex;
+    gap: 5px; /* Keep for spacing */
+}
+
+.two label a {
+    text-decoration: none;
+    color: white;
+}
+
+.two label a:hover {
+    text-decoration: underline;
+}
