@@ -5,6 +5,7 @@ import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
+import  ChatPage  from "./pages/chatPage";
 import injectContext from "./store/appContext";
 
 import Navbar from "./component/navbar";
@@ -40,6 +41,7 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
+                        <Route element={<ChatPage />} path="/chatPage/:id" />
                         
                         <Route
                             element={<DogProfile profile={exampleProfile} currentUserId={1} />}
