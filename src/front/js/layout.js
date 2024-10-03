@@ -3,11 +3,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
+import { Demo } from "./pages/demo";  // From chchalle
+import { Single } from "./pages/single";  // From chchalle
+import ChatPage from "./pages/chatPage";  // From chchalle
 import injectContext from "./store/appContext";
 import Navbar from "./component/navbar";
 import DogProfile from "./component/DogProfile";
 import { Footer } from "./component/footer";
-import { LoginSignUp } from "./LoginSignUp";
+import { LoginSignUp } from "./LoginSignUp";  // From main
 
 // Example dog profile object
 const exampleProfile = {
@@ -41,7 +44,10 @@ const Layout = () => {
 
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<LoginSignUp />} path="/login" />
+                        <Route element={<Demo />} path="/demo" />  {/* Keep from chchalle */}
+                        <Route element={<Single />} path="/single/:theid" />  {/* Keep from chchalle */}
+                        <Route element={<ChatPage />} path="/chatPage/:id" />  {/* Keep from chchalle */}
+                        <Route element={<LoginSignUp />} path="/login" />  {/* Keep from main */}
                         <Route
                             element={<DogProfile profile={exampleProfile} currentUserId={1} />}
                             path="/dog-profile/:id"

@@ -5,13 +5,12 @@ const getState = ({ getStore, getActions, setStore }) => {
             JWT_Token: '', 
             messages: [],
             matches: [],
-			userProfile: null
+            userProfile: null
         },
         actions: {
-            
             fetchMessages(userId, partnerUserId) {
                 const store = getStore();
-                fetch(`/api/messages/${userId}/${partnerUserId}`, {
+                return fetch(`/api/messages/${userId}/${partnerUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${store.JWT_Token}` 
@@ -22,18 +21,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                     return response.json();
                 })
                 .then(data => {
-                    const messagesArea = document.getElementById('messagesArea');
-                    messagesArea.innerHTML = ''; 
-                    data.forEach(msg => {
-                        const messageElement = document.createElement('div');
-                        messageElement.className = `message ${msg.from === userId ? 'from' : 'to'}`;
-                        messageElement.innerText = msg.content;
-                        messagesArea.appendChild(messageElement);
-                    });
+                    setStore({ messages: data }); 
+                    return data; 
                 })
                 .catch(error => console.error('Error fetching messages:', error));
             },
-           
+
             sendMessages(userId, partnerUserId, messageInput) {
                 const messageContent = messageInput.value.trim();
                 if (messageContent) {
@@ -52,9 +45,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     })
                     .then(response => {
                         if (response.ok) {
-                            messageInput.value = ''; // Clear input field
                             const actions = getActions();
-                            actions.fetchMessages(userId, partnerUserId); 
+                            actions.fetchMessages(userId, partnerUserId); // Fetch messages after sending
                         } else {
                             alert('Failed to send message.');
                         }
@@ -62,9 +54,27 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .catch(error => console.error('Error sending message:', error));
                 }
             },
-			fetchUserProfile(userId) {
+
+            fetchMatches(userId) {
                 const store = getStore();
-                setStore({ isLoading: true }); // Set loading state
+                fetch(`/api/users/${userId}/matched`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ matches: data.matches }); 
+                })
+                .catch(error => console.error('Error fetching matches:', error));
+            },
+
+            fetchUserProfile(userId) {
+                const store = getStore();
                 fetch(`/api/users/${userId}/profile`, {
                     method: 'GET',
                     headers: {
@@ -78,9 +88,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                 .then(data => {
                     setStore({ userProfile: data }); 
                 })
-                .catch(error => console.error('Error fetching profile:', error))
-			},
-			updateUserProfile(userId, updatedProfileData) {
+                .catch(error => console.error('Error fetching profile:', error));
+            },
+
+            updateUserProfile(userId, updatedProfileData) {
                 const store = getStore();
                 fetch(`/api/users/${userId}/profile`, {
                     method: 'PUT',
@@ -98,27 +109,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     setStore({ userProfile: data }); 
                 })
                 .catch(error => console.error('Error updating profile:', error));
-            },
-            
-            fetchMatches(userId) {
-                const store = getStore();
-                fetch(`/api/users/${userId}/matched`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}`
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    setStore({ matches: data.matches }); 
-                })
-                .catch(error => console.error('Error fetching matches:', error));
             }
         }
     }
 };
 
 export default getState;
+
