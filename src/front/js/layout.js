@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"; 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
@@ -8,23 +8,10 @@ import { Single } from "./pages/single";  // From chchalle
 import ChatPage from "./pages/chatPage";  // From chchalle
 import injectContext from "./store/appContext";
 import Navbar from "./component/navbar";
-import DogProfile from "./component/DogProfile";
+import DogList from './component/DogList';
 import { Footer } from "./component/footer";
 import { LoginSignUp } from "./LoginSignUp";  // From main
-
-// Example dog profile object
-const exampleProfile = {
-    username: "Buddy",
-    photos: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzdKy18Gk8V7Fg66o6IUUZO-uEHzOg55QAxXeQ420JSnReEStlZU1ihqbEdKzWu_EBJPU&usqp=CAU",
-    bio: "Friendly and energetic dog looking for playdates!",
-    age: 3,
-    breed: "Golden Retriever",
-    city: "Atlanta",
-    state: "GA",
-    temperment: "Friendly",
-    looking_for: "Playdates",
-    user_id: 2,  // dog ID
-};
+import DogProfile from "./component/DogProfile"; // Assuming you have a full profile view for a dog
 
 // Main layout component
 const Layout = () => {
@@ -42,19 +29,32 @@ const Layout = () => {
                     {/* Navbar component */}
                     <Navbar />
 
+                    {/* Define routes */}
                     <Routes>
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />  {/* Keep from chchalle */}
-                        <Route element={<Single />} path="/single/:theid" />  {/* Keep from chchalle */}
-                        <Route element={<ChatPage />} path="/chatPage/:id" />  {/* Keep from chchalle */}
-                        <Route element={<LoginSignUp />} path="/login" />  {/* Keep from main */}
-                        <Route
-                            element={<DogProfile profile={exampleProfile} currentUserId={1} />}
-                            path="/dog-profile/:id"
-                        />
-                        <Route element={<h1>Not found!</h1>} path="*" />
+                        {/* Home route */}
+                        <Route path="/" element={<Home />} />
+
+                        {/* Demo and other static pages */}
+                        <Route path="/demo" element={<Demo />} />
+                        <Route path="/single/:theid" element={<Single />} />
+
+                        {/* Chat route */}
+                        <Route path="/chatPage/:id" element={<ChatPage />} />
+
+                        {/* Login/Signup route */}
+                        <Route path="/login" element={<LoginSignUp />} />
+
+                        {/* Profiles Route - DogList renders the swipeable profiles */}
+                        <Route path="/profiles" element={<DogList userId={1} />} />
+
+                        {/* DogProfile Route - For viewing a single full profile */}
+                        <Route path="/dog-profile/:id" element={<DogProfile />} />
+
+                        {/* 404 Not Found Route */}
+                        <Route path="*" element={<h1>Not found!</h1>} />
                     </Routes>
 
+                    {/* Footer */}
                     <Footer />
                 </ScrollToTop>
             </BrowserRouter>

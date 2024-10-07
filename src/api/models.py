@@ -1,144 +1,37 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
-from flask import Flask, request, jsonify, Blueprint
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from .models import db, User, Profile, Like, Message, Match  # Include Match model
-import requests
-import math
-import os
+from flask_sqlalchemy import SQLAlchemy
 
-api = Blueprint('routes', __name__)
-jwt = JWTManager(app)
+db = SQLAlchemy()
 
-@api.before_app_request
-def create_tables():
-    db.create_all()
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
-@api.route('/users/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    new_user = User(username=data['username'], email=data['email'], password=data['password'])
-    db.session.add(new_user)
-    db.session.commit()
-    
-    new_profile = Profile(user_id=new_user.id)
-    db.session.add(new_profile)
-    db.session.commit()
+    likes = db.relationship('Like', backref='user', lazy=True)
 
-    return jsonify({"message": "User registered successfully"}), 201
+class Profile(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+     username = db.Column(db.String(80), unique=True, nullable=False)
+     bio = db.Column(db.String(200))
+     age = db.Column(db.Integer)
+     breed=db.Column(db.String(200))
+     city=db.Column(db.String(200))
+     state=db.Column(db.String(200))
+     temperment=db.Column(db.String(200))
+     looking_for=db.Column(db.String(200))
+     photos = db.Column(db.String(500)) #photos stored as URL potentially
 
-@api.route('/users/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    user = User.query.filter_by(email=data['email'], password=data['password']).first()
-    if user:
-        access_token = create_access_token(identity=user.id)
-        return jsonify({"token": access_token, "userId": user.id}), 200
-    return jsonify({"message": "Bad credentials"}), 401
 
-@api.route('/users/<int:user_id>/profile', methods=['GET'])
-@jwt_required()
-def get_user_profile(user_id):
-    user = User.query.get_or_404(user_id)
-    profile = Profile.query.filter_by(user_id=user.id).first()
-    return jsonify({
-        "userId": user.id,
-        "username": user.username,
-        "bio": profile.bio,
-        "age": profile.age,
-        "breed": profile.breed,
-        "city": profile.city,
-        "state": profile.state,
-        "temperament": profile.temperment,
-        "looking_for": profile.looking_for,
-        "photos": profile.photos.split(',') if profile.photos else []
-    }), 200
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    target_user_id = db.Column(db.Integer, nullable=False)
 
-@api.route('/users/<int:user_id>/profile', methods=['PUT'])
-@jwt_required()
-def update_user_profile(user_id):
-    data = request.get_json()
-    profile = Profile.query.filter_by(user_id=user_id).first()
-    profile.bio = data.get('bio', profile.bio)
-    profile.age = data.get('age', profile.age)
-    profile.breed = data.get('breed', profile.breed)
-    profile.city = data.get('city', profile.city)
-    profile.state = data.get('state', profile.state)
-    profile.temperment = data.get('temperment', profile.temperment)
-    profile.looking_for = data.get('looking_for', profile.looking_for)
-    profile.photos = ','.join(data.get('photos', []))  # This assumes URLs might need change later
-    db.session.commit()
-    return jsonify({"message": "Profile updated successfully"}), 200
-
-@api.route('/swipe/right', methods=['POST'])
-@jwt_required()
-def swipe_right():
-    data = request.get_json()
-    new_like = Like(user_id=data['userId'], target_user_id=data['targetUserId'])
-    db.session.add(new_like)
-    
-    existing_like = Like.query.filter_by(user_id=data['targetUserId'], target_user_id=data['userId']).first()
-    if existing_like:
-       
-        new_match = Match(user_id=data['userId'], matched_user_id=data['targetUserId'])
-        db.session.add(new_match)
-    
-    db.session.commit()
-    return jsonify({"message": "You liked the user"}), 200
-
-@api.route('/users/<int:user_id>/matched', methods=['GET'])
-@jwt_required()
-def get_matches(user_id):
-    matches = Match.query.filter((Match.user_id == user_id) | (Match.matched_user_id == user_id)).all()
-    matched_user_ids = [match.matched_user_id if match.user_id == user_id else match.user_id for match in matches]
-    return jsonify({"matches": matched_user_ids}), 200
-
-@api.route('/messages', methods=['POST'])
-@jwt_required()
-def send_message():
-    data = request.get_json()
-    new_message = Message(from_user_id=data['fromUserId'], to_user_id=data['toUserId'], content=data['content'])
-    db.session.add(new_message)
-    db.session.commit()
-    return jsonify({"message": "Message sent successfully"}), 200
-
-@api.route('/messages/<int:user_id>/<int:partner_user_id>', methods=['GET'])
-@jwt_required()
-def get_messages(user_id, partner_user_id):
-    messages = Message.query.filter(
-        (Message.from_user_id == user_id) & (Message.to_user_id == partner_user_id) |
-        (Message.from_user_id == partner_user_id) & (Message.to_user_id == user_id)
-    ).all()
-    return jsonify([{"from": msg.from_user_id, "content": msg.content, "timestamp": msg.timestamp} for msg in messages]), 200
-
-def get_geo_location(city, state):
-    api_key = os.environ.get('Geolocation_api_key')
-    query = f"{city}, {state}"
-    url = f"https://api.opencagedata.com/geocode/v1/json?q={query}&key={api_key}"
-
-    response = requests.get(url)
-    data = response.json()
-
-    if data['results']:
-        location = data['results'][0]['geometry']
-        return location['lat'], location['lng']
-    else:
-        return None
-    
-def haversine(lat1, lon1, lat2, lon2):
-    # copied the haversine formula off the internet... should put lat long to miles
-    R = 3956
-
-    lat1_rad = math.radians(lat1)
-    lon1_rad = math.radians(lon1)
-    lat2_rad = math.radians(lat2)
-    lon2_rad = math.radians(lon2)
-
-    dlat = lat2_rad - lat1_rad
-    dlon = lon2_rad - lon1_rad
-    a = math.sin(dlat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2)**2
-    c = 2 * math.asin(math.sqrt(a))
-
-    distance = R * c
-    return distance
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    from_user_id = db.Column(db.Integer, nullable=False)
+    to_user_id = db.Column(db.Integer, nullable=False)
+    content = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())

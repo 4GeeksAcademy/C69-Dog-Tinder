@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'; 
-import { useStore } from 'your-store-context'; 
+import  useStore from '../store/appContext'; 
 
 const ChatPage = () => {
     const { id: userId } = useParams(); 
