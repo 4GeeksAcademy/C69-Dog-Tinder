@@ -1,42 +1,58 @@
 import React from 'react';
+import TinderCard from 'react-tinder-card';
+import PropTypes from 'prop-types';
 
-const DogProfile = ({ profile, currentUserId }) => {
-    const handleLike = async () => {
-        const response = await fetch('/like', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: currentUserId,  
-                target_user_id: profile.user_id,  
-            }),
-        });
+const DogProfile = ({ dog, onLike, onDiscard, onViewProfile }) => {
+  
+  const swiped = (direction) => {
+    if (direction === 'right') {
+      onLike(dog.id);
+    } else if (direction === 'left') {
+      onDiscard(dog.id);
+    }
+  };
 
-        const data = await response.json();
-        if (response.ok) {
-            alert("You liked this dog!");
-        } else {
-            alert(data.message);
-        }
-    };
+  return (
+    <div className="dog-profile-card">
+      <TinderCard
+        className="swipe"
+        onSwipe={swiped}
+        preventSwipe={['up', 'down']}
+      >
+        <div
+          className="card"
+          style={{ backgroundImage: `url(${dog.photos[0]})`, backgroundSize: 'cover' }}
+        >
+          <div className="dog-info">
+            <h3>{dog.username}</h3>
+            <p>Age: {dog.age}</p>
+            <p>Location: {dog.city}, {dog.state}</p>
+          </div>
 
-    return (
-        <div className="card" style={{ width: '18rem' }}>
-            <img src={profile.photos} className="card-img-top" alt={profile.breed} />
-            <div className="card-body">
-                <h5 className="card-title">{profile.username}</h5>
-                <p className="card-text"><strong>Bio:</strong> {profile.bio}</p>
-                <p className="card-text"><strong>Age:</strong> {profile.age}</p>
-                <p className="card-text"><strong>Breed:</strong> {profile.breed}</p>
-                <p className="card-text"><strong>Location:</strong> {profile.city}, {profile.state}</p>
-                <p className="card-text"><strong>Temperament:</strong> {profile.temperment}</p>
-                <p className="card-text"><strong>Looking for:</strong> {profile.looking_for}</p>
-                <button className="btn btn-primary" onClick={handleLike}>Like</button>
-            </div>
+          {/* Buttons for Like, Discard, and View Profile */}
+          <div className="action-buttons">
+            <button className="discard-btn" onClick={() => onDiscard(dog.id)}>❌</button>
+            <button className="view-btn" onClick={() => onViewProfile(dog.id)}>👁️</button>
+            <button className="like-btn" onClick={() => onLike(dog.id)}>❤️</button>
+          </div>
         </div>
-    );
-}
+      </TinderCard>
+    </div>
+  );
+};
+
+DogProfile.propTypes = {
+  dog: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    username: PropTypes.string.isRequired,
+    age: PropTypes.string.isRequired,
+    city: PropTypes.string.isRequired,
+    state: PropTypes.string.isRequired,
+    photos: PropTypes.arrayOf(PropTypes.string).isRequired
+  }).isRequired,
+  onLike: PropTypes.func.isRequired,
+  onDiscard: PropTypes.func.isRequired,
+  onViewProfile: PropTypes.func.isRequired
+};
 
 export default DogProfile;
-
