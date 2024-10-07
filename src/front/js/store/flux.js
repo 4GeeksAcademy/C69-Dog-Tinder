@@ -5,7 +5,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             JWT_Token: '', 
             messages: [],
             matches: [],
-            userProfile: null
+            userProfile: null,
+            userSettings: null,
         },
         actions: {
             fetchMessages(userId, partnerUserId) {
@@ -109,6 +110,43 @@ const getState = ({ getStore, getActions, setStore }) => {
                     setStore({ userProfile: data }); 
                 })
                 .catch(error => console.error('Error updating profile:', error));
+            },
+            fetchUserSettings(userId) {
+                const store = getStore();
+                fetch(`/api/users/${userId}/settings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch profile');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ userSettings: data }); 
+                })
+                .catch(error => console.error('Error fetching settings:', error));
+            },
+
+            updateUserSettings(userId, updatedSettingsData) {
+                const store = getStore();
+                fetch(`/api/users/${userId}/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    },
+                    body: JSON.stringify(updatedSettingsData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update settings');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ userSettings: data }); 
+                })
+                .catch(error => console.error('Error updating settings:', error));
             }
         }
     }
