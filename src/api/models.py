@@ -35,3 +35,12 @@ class Message(db.Model):
     to_user_id = db.Column(db.Integer, nullable=False)
     content = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+class Settings(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+     age = db.Column(db.Integer)
+     breed=db.Column(db.String(200))
+     distance=db.Column(db.Integer)
+     temperment=db.Column(db.String(200))
+     looking_for=db.Column(db.String(200))
