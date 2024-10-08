@@ -1,71 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import DogProfile from './DogProfile';
+import { Context } from '../store/appContext'; // Import context from Flux
 
 const DogList = ({ userId }) => {
-  const [dogs, setDogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { store, actions } = useContext(Context); // Access store and actions from context
 
   useEffect(() => {
-    const fetchDogProfiles = async () => {
-      try {
-        const response = await fetch(`/users/${userId}/profile`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        setDogs(data.profiles);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching dog profiles:', error);
-      }
-    };
+    actions.fetchUserProfile(userId); // Fetch the user's profiles (or dog profiles)
+  }, [userId, actions]);
 
-    fetchDogProfiles();
-  }, [userId]);
-
-  const handleLike = async (dogId) => {
-    try {
-      const response = await fetch('/swipe/right', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          userId: userId,
-          targetUserId: dogId
-        })
-      });
-      const result = await response.json();
-      console.log(result.message);
-    } catch (error) {
-      console.error('Error liking the dog:', error);
-    }
-  };
-
-  const handleDiscard = (dogId) => {
-    console.log(`Discarded dog with ID: ${dogId}`);
-  };
-
-  const handleViewProfile = (dogId) => {
-    // Logic to show the full profile, e.g., navigate to a profile detail page
-    console.log(`Viewing full profile of dog ID: ${dogId}`);
-  };
-
-  if (loading) {
-    return <p>Loading...</p>;
+  if (store.loading) {
+    return <p>Loading...</p>; // Loading state
   }
 
   return (
     <div className="dog-list">
-      {dogs.map((dog) => (
+      {store.profiles.map((dog) => (
         <DogProfile
           key={dog.id}
           dog={dog}
-          onLike={handleLike}
-          onDiscard={handleDiscard}
-          onViewProfile={handleViewProfile}
+          onLike={actions.likeProfile}  // Call like action from Flux
+          onDiscard={actions.discardProfile}  // Call discard action from Flux
+          onViewProfile={actions.viewProfile}  // Call view profile action from Flux
         />
       ))}
     </div>
