@@ -1,12 +1,14 @@
 const getState = ({ getStore, getActions, setStore }) => {
     return {
         store: {
-            profiles: [],            // Stores the dog profiles
-            JWT_Token: '',           // Stores JWT for authentication
-            messages: [],            // Stores chat messages
-            matches: [],             // Stores the matches (liked profiles)
-            userProfile: null,       // Stores the current user's profile
-            loading: true,           // Loading state for fetching data
+            profiles: [],
+            JWT_Token: '', 
+            messages: [],
+            matches: [],
+            loading: true, 
+            userProfile: null,
+            userSettings: null,
+
         },
         actions: {
             // Fetch Dog Profiles for the current user
@@ -173,6 +175,43 @@ const getState = ({ getStore, getActions, setStore }) => {
                     setStore({ userProfile: data }); // Update the user's profile in state
                 })
                 .catch(error => console.error('Error updating profile:', error));
+            },
+            fetchUserSettings(userId) {
+                const store = getStore();
+                fetch(`/api/users/${userId}/settings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch profile');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ userSettings: data }); 
+                })
+                .catch(error => console.error('Error fetching settings:', error));
+            },
+
+            updateUserSettings(userId, updatedSettingsData) {
+                const store = getStore();
+                fetch(`/api/users/${userId}/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    },
+                    body: JSON.stringify(updatedSettingsData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update settings');
+                    return response.json();
+                })
+                .then(data => {
+                    setStore({ userSettings: data }); 
+                })
+                .catch(error => console.error('Error updating settings:', error));
             }
         }
     };

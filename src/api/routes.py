@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from .models import db, User, Profile, Like, Message
+from .models import db, User, Profile, Like, Message, Settings
 import requests
 import math
 import os
@@ -60,6 +60,20 @@ def get_user_profile(user_id):
         "photos": profile.photos.split(',') if profile.photos else []
     }), 200
 
+@api.route('/users/<int:user_id>/settings', methods=['GET'])
+@jwt_required()
+def get_user_settings(user_id):
+    user = User.query.get_or_404(user_id)
+    settings = Settings.query.filter_by(user_id=user.id).first()
+    return jsonify({
+        "userId": user.id,
+        "age": settings.age,
+        "breed": settings.breed,
+        "distance": settings.distance,
+        "temperment": settings.temperment,
+        "looking_for": settings.looking_for,
+    }), 200
+
 
 @api.route('/users/<int:user_id>/profile', methods=['PUT'])
 @jwt_required()
@@ -76,6 +90,20 @@ def update_user_profile(user_id):
     profile.photos = ','.join(data.get('photos', []))  # This assumes URLS might need change later
     db.session.commit()
     return jsonify({"message": "Profile updated successfully"}), 200
+
+@api.route('/users/<int:user_id>/settings', methods=['PUT'])
+@jwt_required()
+def update_user_settings(user_id):
+    data = request.get_json()
+    settings = Settings.query.filter_by(user_id=user_id).first()
+    settings.age = data.get('age', settings.age)
+    settings.breed=data.get('breed', settings.breed)
+    settings.distance=data.get('distance', settings.distance)
+    settings.temperment=data.get('temperment', settings.temperment)
+    settings.looking_for=data.get('looking_for', settings.looking_for)
+
+    db.session.commit()
+    return jsonify({"message": "Settings updated successfully"}), 200
 
 
 @api.route('/swipe/right', methods=['POST'])
