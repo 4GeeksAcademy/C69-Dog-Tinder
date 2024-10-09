@@ -189,13 +189,30 @@ const getState = ({ getStore, getActions, setStore }) => {
                     return response.json();
                 })
                 .then(data => {
-                    setStore({ userSettings: data }); 
+                    // Convert age in months to years and months
+                    const years = Math.floor(data.age / 12);  // Get years
+                    const months = data.age % 12;  // Get remaining months
+
+                    setStore({ userSettings: {
+                            ...data,
+                            ageYears: years,    // Add separate age in years
+                            ageMonths: months   // Add separate age in months
+                        } 
+                    }); 
                 })
                 .catch(error => console.error('Error fetching settings:', error));
             },
 
             updateUserSettings(userId, updatedSettingsData) {
                 const store = getStore();
+                   // Convert years and months to total months
+                   const totalMonths = (parseInt(updatedSettingsData.ageYears) * 12) + parseInt(updatedSettingsData.ageMonths || 0);
+
+                   const settingsPayload = {
+                       ...updatedSettingsData,
+                       age: totalMonths  // Send total months to the backend
+                   };
+
                 fetch(`/api/users/${userId}/settings`, {
                     method: 'PUT',
                     headers: {

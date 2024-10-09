@@ -12,6 +12,7 @@ import DogList from './component/DogList';
 import { Footer } from "./component/footer";
 import { LoginSignUp } from "./LoginSignUp";  // From main
 import DogProfile from "./component/DogProfile"; // Assuming you have a full profile view for a dog
+import SettingsPage from './pages/SettingsPage'; // Import the settings page
 
 // Main layout component
 const Layout = () => {
@@ -49,6 +50,9 @@ const Layout = () => {
 
                         {/* DogProfile Route - For viewing a single full profile */}
                         <Route path="/dog-profile/:id" element={<DogProfile />} />
+
+                         {/* Settings Route - This is where you integrate the settings page */}
+                         <Route path="/settings" element={<SettingsPage />} />
 
                         {/* 404 Not Found Route */}
                         <Route path="*" element={<h1>Not found!</h1>} />
