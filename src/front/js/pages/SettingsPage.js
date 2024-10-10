@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Context } from '../store/appContext';
-import '../../styles/SettingsPage.css'; // Import the updated styles
+import '../../styles/SettingsPage.css'; 
 import { useNavigate } from 'react-router-dom';
 
 const SettingsPage = () => {

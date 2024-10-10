@@ -2,18 +2,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 90vh;
+    min-height: 70vh;
     background-size: cover;
     background-position: center;
-    padding: 15px;
-    font-family: 'Roboto', sans-serif;
+    padding: 10px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .settings-box {
     background-color: rgba(180, 188, 223, 0.904);
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    border-radius: 20px;
+    padding: 20px;
     width: 90%;
     max-width: 400px;
 }
@@ -26,15 +25,16 @@
 }
 
 .settings-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    color: #333;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #000;
 }
 
 .done-button {
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
-    color: #570be4;
+    color: #f30c18;
     cursor: pointer;
     background: none;
     border: none;
@@ -46,10 +46,11 @@
 }
 
 .form-group label {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
-    color: #555;
+    color: black;
     margin-bottom: 5px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .form-control {
@@ -62,7 +63,6 @@
 }
 
 .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.2);
+    border-color:  rgba(0, 123, 255, 0.2);
     outline: none;
 }
