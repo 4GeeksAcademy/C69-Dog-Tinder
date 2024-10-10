@@ -1,4 +1,4 @@
-import React from "react"; 
+import React, { useContext } from "react"; 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
@@ -6,22 +6,26 @@ import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";  // From chchalle
 import { Single } from "./pages/single";  // From chchalle
 import ChatPage from "./pages/chatPage";  // From chchalle
-import injectContext from "./store/appContext";
+import injectContext, { Context } from "./store/appContext";
 import Navbar from "./component/navbar";
-import DogList from './component/DogList';
 import { Footer } from "./component/footer";
 import { LoginSignUp } from "./LoginSignUp";  // From main
-import DogProfile from "./component/DogProfile"; // Assuming you have a full profile view for a dog
-import SettingsPage from './pages/SettingsPage'; // Import the settings page
+import DogProfile from "./component/DogProfile"; 
+import SettingsPage from './pages/SettingsPage'; 
+import Playdates from './pages/Playdates'; 
 
 // Main layout component
 const Layout = () => {
     const basename = process.env.BASENAME || "";
+    const { store } = useContext(Context);
 
-    // Check for backend URL
-    if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") {
-        return <BackendURL />;
-    }
+
+// Retrieve userId from userProfile in store
+const userId = store.userProfile ? store.userProfile.id : null;
+
+if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") {
+    return <BackendURL />;
+}
 
     return (
         <div>
@@ -45,17 +49,19 @@ const Layout = () => {
                         {/* Login/Signup route */}
                         <Route path="/login" element={<LoginSignUp />} />
 
-                        {/* Profiles Route - DogList renders the swipeable profiles */}
-                        <Route path="/profiles" element={<DogList userId={1} />} />
-
                         {/* DogProfile Route - For viewing a single full profile */}
                         <Route path="/dog-profile/:id" element={<DogProfile />} />
 
-                         {/* Settings Route - This is where you integrate the settings page */}
-                         <Route path="/settings" element={<SettingsPage />} />
+                        {/* Settings Route - This is where you integrate the settings page */}
+                        <Route path="/settings" element={<SettingsPage />} />
 
-                        {/* 404 Not Found Route */}
+                         {/* Pass userId to Playdates page */}
+                         {userId && (
+                            <Route path="/playdates" element={<Playdates userId={userId} />} />
+                        )}
+                        
                         <Route path="*" element={<h1>Not found!</h1>} />
+
                     </Routes>
 
                     {/* Footer */}

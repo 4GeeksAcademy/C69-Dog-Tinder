@@ -7,7 +7,7 @@ const Navbar = () => {
   return (
     <>
       {/* Bottom Navbar */}
-      <nav className="navbar navbar-light bg-light fixed-bottom app-navbar">
+      <nav className="navbar navbar-light fixed-bottom app-navbar">
         <div className="container-fluid justify-content-around">
           <Link className="nav-item text-center" to="/profiles">
             <FaDog className="navbar-icon" />

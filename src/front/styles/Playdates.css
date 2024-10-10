@@ -1,0 +1,83 @@
+/* Style for the main playdates container */
+.playdates-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Individual dog profile card */
+  .dog-profile {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  
+  /* On hover, add a slight lift effect */
+  .dog-profile:hover {
+    transform: translateY(-10px);
+  }
+  
+  /* Profile picture of the dog (placeholder if no picture) */
+  .dog-profile img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  
+  /* Dog name styling */
+  .dog-profile h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  /* Dog breed and age */
+  .dog-profile p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  /* Buttons for removing and viewing profiles */
+  .dog-profile button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Style for the 'View Profile' button */
+  .dog-profile button:nth-child(2) {
+    background-color: #4caf50;
+  }
+  
+  /* Button hover effects */
+  .dog-profile button:hover {
+    background-color: #ff3b3b;
+  }
+  
+  .dog-profile button:nth-child(2):hover {
+    background-color: #3e8e41;
+  }
+  
+  /* Message for no playdates */
+  .no-playdates-message {
+    font-size: 20px;
+    color: #333;
+    text-align: center;
+    padding: 50px;
+  }
+  

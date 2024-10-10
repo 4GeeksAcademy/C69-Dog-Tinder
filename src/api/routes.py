@@ -124,6 +124,17 @@ def get_matches(user_id):
     return jsonify({"matches": matches}), 200
 
 
+@api.route('/users/<int:user_id>/unmatch/<int:dog_id>', methods=['DELETE'])
+@jwt_required()
+def unmatch(user_id, dog_id):
+    like = Like.query.filter_by(user_id=user_id, target_user_id=dog_id).first()
+    if like:
+        db.session.delete(like)
+        db.session.commit()
+        return jsonify({"message": "Unmatched successfully"}), 200
+    return jsonify({"message": "Match not found"}), 404
+
+
 @api.route('/messages', methods=['POST'])
 @jwt_required()
 def send_message():
