@@ -1,0 +1,128 @@
+/* Container for the login form */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff);
+    padding: 20px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Title */
+h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* Input box styling */
+.input-box {
+    margin-bottom: 20px;
+    width: 400px;
+    max-width: 400px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ccc;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    color: #333;
+    background-color: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    transition: border 0.3s ease;
+}
+
+/* Input hover and focus states */
+.input-box input:focus {
+    border-color: #154a83; /* Hover state from navbar */
+    outline: none;
+}
+
+.input-box input::placeholder {
+    color: #aaa;
+    font-size: 1rem;
+}
+
+/* Submit button */
+.submit {
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #333, #154a83); /* Gradient similar to buttons */
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    border: none;
+}
+
+.submit:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #4b3f3f, #154a83); /* Darker on hover */
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Two-column options (Remember Me and Forgot Password) */
+.two-col {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 10px;
+}
+
+.two-col a {
+    color: #154a83;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.two-col a:hover {
+    text-decoration: underline;
+}
+
+/* Checkbox styling */
+.two-col input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Sign-up link */
+.top {
+    margin-top: 20px;
+}
+
+.top p {
+    font-size: 1rem;
+    color: #fe2424;
+}
+
+.top a {
+    color: #154a83;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.top a:hover {
+    text-decoration: underline;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

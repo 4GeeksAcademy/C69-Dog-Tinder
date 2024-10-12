@@ -1,6 +1,5 @@
 import React, { useContext } from "react"; 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";  // From chchalle
@@ -9,7 +8,8 @@ import ChatPage from "./pages/chatPage";  // From chchalle
 import injectContext, { Context } from "./store/appContext";
 import Navbar from "./component/navbar";
 import { Footer } from "./component/footer";
-import { LoginSignUp } from "./LoginSignUp";  // From main
+import { UserCreation } from './pages/UserCreation';
+import { Login } from './pages/Login';
 import DogProfile from "./component/DogProfile"; 
 import SettingsPage from './pages/SettingsPage'; 
 import Playdates from './pages/Playdates'; 
@@ -30,7 +30,7 @@ if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") {
     return (
         <div>
             <BrowserRouter basename={basename}>
-                <ScrollToTop>
+                
                     {/* Navbar component */}
                     <Navbar />
 
@@ -47,11 +47,14 @@ if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") {
                         <Route path="/chatPage/:id" element={<ChatPage />} />
 
                         {/* Login/Signup route */}
-                        <Route path="/login" element={<LoginSignUp />} />
+                        <Route path="/Login" element={<Login />} />
 
                         {/* DogProfile Route - For viewing a single full profile */}
                         <Route path="/dog-profile/:id" element={<DogProfile />} />
 
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/signup" element={<UserCreation />} />
+                        
                         {/* Settings Route - This is where you integrate the settings page */}
                         <Route path="/settings" element={<SettingsPage />} />
 
@@ -66,7 +69,7 @@ if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") {
 
                     {/* Footer */}
                     <Footer />
-                </ScrollToTop>
+                
             </BrowserRouter>
         </div>
     );

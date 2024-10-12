@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaDog, FaHeart, FaComment, FaCog } from 'react-icons/fa'; // Example icons
-import '../../styles/navbar.css';
+import '../../styles/Navbar.css';
 
 const Navbar = () => {
   return (

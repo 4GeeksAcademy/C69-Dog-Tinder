@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-//import DogProfile from '../component/DogProfile';
 import { useParams } from "react-router-dom";
 import { Context } from '../store/appContext';
 import '../../styles/Playdates.css'; 

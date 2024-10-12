@@ -1,22 +1,26 @@
+/* Main container for the settings */
 .settings-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 70vh;
-    background-size: cover;
-    background-position: center;
-    padding: 10px;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.settings-box {
-    background-color: rgba(180, 188, 223, 0.904);
-    border-radius: 20px;
+    min-height: 80vh;
+    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff);
     padding: 20px;
-    width: 90%;
-    max-width: 400px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Box for the settings form */
+.settings-box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 70%;
+    max-width: 500px; /* Smaller max-width */
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Header section */
 .settings-header {
     display: flex;
     justify-content: space-between;
@@ -25,44 +29,69 @@
 }
 
 .settings-title {
-    font-size: 20px;
+    font-size: 2rem;
     font-weight: bold;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #000;
-}
-
-.done-button {
-    font-size: 25px;
-    font-weight: bold;
-    color: #f30c18;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    font-size: 16px;
-    font-weight: bold;
-    color: black;
-    margin-bottom: 5px;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
     color: #333;
 }
 
-.form-control:focus {
-    border-color:  rgba(0, 123, 255, 0.2);
+/* Done button */
+.done-button {
+    padding: 10px 20px;
+    background-color: #154a83;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.done-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Form styling */
+.settings-form .form-group {
+    margin-bottom: 20px;
+}
+
+.settings-form label {
+    font-size: 1.2rem;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.settings-form input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ccc;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    color: #333;
+    background-color: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    transition: border 0.3s ease;
+}
+
+.settings-form input:focus {
+    border-color: #154a83;
     outline: none;
+}
+
+.settings-form input::placeholder {
+    color: #aaa;
+    font-size: 1rem;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
