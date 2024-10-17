@@ -115,7 +115,7 @@ export function UserCreation({ rememberMe }) {
                 </div>
             </form>
             <div className="top">
-                <p>Already have an account? <a href="#" onClick={() => navigate('/login')}>Login</a></p>
+                <p>Already have an account? <a href="#" onClick={() => navigate('/dog-profile-creation')}>Login</a></p>
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from .models import db, User, Profile, Like, Message, Settings
+from .models import db, User, Profile, DogProfile, Like, Message, Settings
 import requests
 import math
 import os
@@ -20,6 +20,13 @@ def create_tables():
 @api.route('/users/register', methods=['POST'])
 def register():
     data = request.get_json()
+    
+    # Check for existing user
+    existing_user = User.query.filter_by(email=data['email']).first()
+    if existing_user:
+        return jsonify({"message": "User already exists with this email"}), 400
+    
+    # Create new user
     new_user = User(username=data['username'], email=data['email'], password=data['password'])
     db.session.add(new_user)
     db.session.commit()
@@ -32,6 +39,29 @@ def register():
     return jsonify({"message": "User registered successfully"}), 201
 
 
+@api.route('/users/<int:user_id>/dog', methods=['POST'])
+@jwt_required()
+def add_dog_profile(user_id):
+    data = request.get_json()
+
+    # Check if user exists
+    user = User.query.get_or_404(user_id)
+
+    # Create a dog profile associated with the user
+    new_dog = DogProfile(
+        user_id=user_id,
+        dog_name=data['dog_name'],
+        age=data['age'],
+        breed=data['breed'],
+        bio=data['bio'],
+        photos=','.join(data['photos']) if 'photos' in data else None  # Store photos as comma-separated strings
+    )
+    db.session.add(new_dog)
+    db.session.commit()
+
+    return jsonify({"message": "Dog profile created successfully"}), 201
+
+
 @api.route('/users/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -39,7 +69,10 @@ def login():
     if user:
         access_token = create_access_token(identity=user.id)
         return jsonify({"token": access_token, "userId": user.id}), 200
-    return jsonify({"message": "Bad credentials"}), 401
+    else:
+        return jsonify({"message": "Invalid email or password"}), 401
+
+
 
 
 @api.route('/users/<int:user_id>/profile', methods=['GET'])
@@ -91,6 +124,7 @@ def update_user_profile(user_id):
     db.session.commit()
     return jsonify({"message": "Profile updated successfully"}), 200
 
+
 @api.route('/users/<int:user_id>/settings', methods=['PUT'])
 @jwt_required()
 def update_user_settings(user_id):
@@ -110,10 +144,21 @@ def update_user_settings(user_id):
 @jwt_required()
 def swipe_right():
     data = request.get_json()
-    new_like = Like(user_id=data['userId'], target_user_id=data['targetUserId'])
+    
+    # Get the authenticated user ID from the JWT token
+    current_user_id = get_jwt_identity()
+    
+    # Ensure the target dog exists (DogProfile)
+    target_dog = DogProfile.query.get(data['targetDogId'])
+    if not target_dog:
+        return jsonify({"message": "Dog not found"}), 404
+    
+    # Create a new "like" entry where the user likes the target dog
+    new_like = Like(user_id=current_user_id, target_user_id=target_dog.id)
     db.session.add(new_like)
     db.session.commit()
-    return jsonify({"message": "You liked the user"}), 200
+
+    return jsonify({"message": f"You liked {target_dog.dog_name}'s profile!"}), 200
 
 
 @api.route('/users/<int:user_id>/matched', methods=['GET'])
