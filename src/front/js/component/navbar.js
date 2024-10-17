@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaDog, FaHeart, FaComment, FaCog } from 'react-icons/fa'; // Example icons
-import '../../styles/navbar.css';
+import '../../styles/Navbar.css';
 
 const Navbar = () => {
   return (
     <>
       {/* Bottom Navbar */}
-      <nav className="navbar navbar-light bg-light fixed-bottom app-navbar">
+      <nav className="navbar navbar-light fixed-bottom app-navbar">
         <div className="container-fluid justify-content-around">
           <Link className="nav-item text-center" to="/profiles">
             <FaDog className="navbar-icon" />
