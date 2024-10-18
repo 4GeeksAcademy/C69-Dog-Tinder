@@ -63,6 +63,27 @@ const getState = ({ getStore, getActions, setStore }) => {
                 // Optionally, you could update the store to remove the discarded profile
             },
 
+            //Remove a match
+            removeMatch(dogId) {
+                const store = getStore();
+                fetch(`/api/users/${store.userProfile.id}/unmatch/${dogId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${store.JWT_Token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to remove match');
+                    return response.json();
+                })
+                .then(() => {
+                    const updatedMatches = store.matches.filter(matchId => matchId !== dogId);  // Remove the dog from the matches list
+                    setStore({ matches: updatedMatches });
+                    console.log(`Match removed: ${dogId}`);
+                })
+                .catch(error => console.error('Error removing match:', error));
+            },
+
             // View a full dog profile (e.g., navigate to another page)
             viewProfile(dogId) {
                 console.log(`Viewing full profile of dog with ID: ${dogId}`);
