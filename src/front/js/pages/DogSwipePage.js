@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import DogProfile from '../component/DogProfile'; // Import your DogProfile component
+import DogProfile from '../component/DogProfile';
 
 const DogSwipePage = () => {
   const [dogs, setDogs] = useState([]);
@@ -10,28 +10,44 @@ const DogSwipePage = () => {
   useEffect(() => {
     const fetchAvailableDogs = async () => {
       try {
-        const response = await fetch('https://shiny-doodle-976pjp6r9q7r3x9jw-3001.app.github.dev/dogs/available', {
+        const response = await fetch(`${process.env.BACKEND_URL}/dogs/available`, {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Assume token is stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           }
         });
 
         if (response.ok) {
           const data = await response.json();
-          setDogs(data.available_dogs); // Set the available dogs
+          setDogs(data.available_dogs);
         } else {
           setError('Failed to load dogs');
         }
       } catch (error) {
         setError('Error fetching dogs');
       } finally {
-        setLoading(false); // Set loading to false once the request is done
+        setLoading(false);
       }
     };
 
-    fetchAvailableDogs(); // Call the function to fetch dogs when the component mounts
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+    fetchAvailableDogs();
+  }, []);
+
+  // Handler functions for like, discard, and view profile actions
+  const handleLike = (id) => {
+    console.log(`Liked dog with id: ${id}`);
+    // Add any additional logic for handling likes here, like calling an API
+  };
+
+  const handleDiscard = (id) => {
+    console.log(`Discarded dog with id: ${id}`);
+    // Add any additional logic for handling discards here
+  };
+
+  const handleViewProfile = (id) => {
+    console.log(`Viewing profile of dog with id: ${id}`);
+    // Add any additional logic to view or navigate to the profile
+  };
 
   // Show loading state
   if (loading) {
@@ -53,9 +69,9 @@ const DogSwipePage = () => {
           <DogProfile
             key={dog.dog_id}
             dog={dog}
-            onLike={(id) => console.log(`Liked dog with id: ${id}`)}
-            onDiscard={(id) => console.log(`Discarded dog with id: ${id}`)}
-            onViewProfile={(id) => console.log(`View profile of dog with id: ${id}`)}
+            onLike={handleLike} // Pass handleLike as prop
+            onDiscard={handleDiscard} // Pass handleDiscard as prop
+            onViewProfile={handleViewProfile} // Pass handleViewProfile as prop
           />
         ))
       )}

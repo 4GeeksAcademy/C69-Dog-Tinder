@@ -3,12 +3,14 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_cors import CORS
 from .models import db, User, Profile, DogProfile, Like, Message, Settings
 import requests
 import math
 import os
 from app import app
 
+CORS(app)
 api = Blueprint('routes', __name__)
 jwt = JWTManager(app)
 
@@ -21,50 +23,50 @@ def create_tables():
 def register():
     data = request.get_json()
     
-    # Check for existing user
-    existing_user = User.query.filter_by(email=data['email']).first()
-    if existing_user:
-        return jsonify({"message": "User already exists with this email"}), 400
+    # Check if the user already exists
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({"message": "User already exists"}), 400
+    
+    # Ensure password confirmation matches
+    if data['password'] != data['confirm_password']:
+        return jsonify({"message": "Passwords do not match"}), 400
     
     # Create new user
-    new_user = User(username=data['username'], email=data['email'], password=data['password'])
+    new_user = User(username=data['email'], email=data['email'], password=data['password'])
     db.session.add(new_user)
     db.session.commit()
-    
-    # Create a new profile for the user
-    new_profile = Profile(user_id=new_user.id)
-    db.session.add(new_profile)
-    db.session.commit()
-
-    return jsonify({"message": "User registered successfully"}), 201
+        
+    # Return JWT Token for authentication
+    access_token = create_access_token(identity=new_user.id)
+    return jsonify({"message": "User registered successfully", "token": access_token}), 201
 
 
-@api.route('/users/<int:user_id>/dog', methods=['POST'])
+# Dog profile creation (for logged-in users)
+@api.route('/users/dog-profile', methods=['POST'])
 @jwt_required()
-def add_dog_profile(user_id):
+def add_dog_profile():
+    user_id = get_jwt_identity()
     data = request.get_json()
 
-    # Check if user exists
-    user = User.query.get_or_404(user_id)
-
-    # Create a dog profile associated with the user
+    # Create a new dog profile
     new_dog = DogProfile(
         user_id=user_id,
         dog_name=data['dog_name'],
         age=data['age'],
         breed=data['breed'],
-        bio=data['bio'],
-        photos=','.join(data['photos']) if 'photos' in data else None  # Store photos as comma-separated strings
+        bio=data.get('bio', ''),
+        photos=','.join(data['photos']) if 'photos' in data else None  # Store photos as comma-separated string
     )
     db.session.add(new_dog)
     db.session.commit()
 
-    return jsonify({"message": "Dog profile created successfully"}), 201
+    return jsonify({"message": "Dog profile created successfully", "dog_id": new_dog.id}), 201
 
 
 @api.route('/users/login', methods=['POST'])
 def login():
     data = request.get_json()
+    print("Received login data:", data)  # Para verificar los datos
     user = User.query.filter_by(email=data['email'], password=data['password']).first()
     if user:
         access_token = create_access_token(identity=user.id)
@@ -73,25 +75,30 @@ def login():
         return jsonify({"message": "Invalid email or password"}), 401
 
 
-
-
-@api.route('/users/<int:user_id>/profile', methods=['GET'])
+@api.route('/dogs/available', methods=['GET'])
 @jwt_required()
-def get_user_profile(user_id):
-    user = User.query.get_or_404(user_id)
-    profile = Profile.query.filter_by(user_id=user.id).first()
-    return jsonify({
-        "userId": user.id,
-        "username": user.username,
-        "bio": profile.bio,
-        "age": profile.age,
-        "breed": profile.breed,
-        "city": profile.city,
-        "state": profile.state,
-        "temperment": profile.temperment,
-        "looking_for": profile.looking_for,
-        "photos": profile.photos.split(',') if profile.photos else []
-    }), 200
+def get_available_dogs():
+    current_user_id = get_jwt_identity()
+
+    # Fetch all dogs excluding the ones owned by the current user
+    available_dogs = DogProfile.query.filter(DogProfile.user_id != current_user_id).all()
+
+    dog_list = []
+    for dog in available_dogs:
+        dog_data = {
+            'id': dog.id,
+            'dog_name': dog.dog_name,
+            'age': dog.age,
+            'breed': dog.breed,
+            'bio': dog.bio,
+            'city': dog.city,
+            'state': dog.state,
+            'photos': dog.photos.split(',')  # Convert photo URLs back into a list
+        }
+        dog_list.append(dog_data)
+
+    return jsonify(dog_list), 200
+
 
 @api.route('/users/<int:user_id>/settings', methods=['GET'])
 @jwt_required()
@@ -153,6 +160,11 @@ def swipe_right():
     if not target_dog:
         return jsonify({"message": "Dog not found"}), 404
     
+    # Ensure the target dog exists (DogProfile)
+    target_dog = DogProfile.query.get(data['targetDogId'])
+    if not target_dog:
+        return jsonify({"message": "Dog not found"}), 404
+    
     # Create a new "like" entry where the user likes the target dog
     new_like = Like(user_id=current_user_id, target_user_id=target_dog.id)
     db.session.add(new_like)
@@ -161,12 +173,29 @@ def swipe_right():
     return jsonify({"message": f"You liked {target_dog.dog_name}'s profile!"}), 200
 
 
-@api.route('/users/<int:user_id>/matched', methods=['GET'])
+@api.route('/users/<int:user_id>/matches', methods=['GET'])
 @jwt_required()
 def get_matches(user_id):
-    likes = Like.query.filter_by(user_id=user_id).all()
-    matches = [like.target_user_id for like in likes]
-    return jsonify({"matches": matches}), 200
+    # Find all dogs the user has liked
+    likes_given = Like.query.filter_by(user_id=user_id).all()
+
+    matches = []
+    for like in likes_given:
+        # Check if the target dog (liked dog) has liked back the user's dog
+        reciprocal_like = Like.query.filter_by(user_id=like.target_dog.user_id, target_dog_id=like.user.dogs[0].id).first()
+        
+        if reciprocal_like:
+            # Fetch details of the matched dog
+            matched_dog = DogProfile.query.get(like.target_dog_id)
+            matches.append({
+                'dog_id': matched_dog.id,
+                'dog_name': matched_dog.dog_name,
+                'photos': matched_dog.photos.split(','),
+                'bio': matched_dog.bio,
+                'breed': matched_dog.breed
+            })
+
+    return jsonify(matches), 200
 
 
 @api.route('/users/<int:user_id>/unmatch/<int:dog_id>', methods=['DELETE'])

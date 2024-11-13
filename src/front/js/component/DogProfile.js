@@ -4,38 +4,15 @@ import PropTypes from 'prop-types';
 
 const DogProfile = ({ dog, onLike, onDiscard, onViewProfile }) => {
   
-  const swiped = async (direction) => {
+  const swiped = (direction) => {
     if (direction === 'right') {
       // Call the onLike function passed as a prop
-      await handleLike(dog.id);
+      onLike(dog.id);
     } else if (direction === 'left') {
       // Call the onDiscard function passed as a prop
       onDiscard(dog.id);
     }
   };
-
-  // Function to call the API when a dog is liked
-  const handleLike = async (dogId) => {
-    try {
-      const response = await fetch('https://shiny-doodle-976pjp6r9q7r3x9jw-3001.app.github.dev/swipe/right', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you're storing the token in localStorage
-        },
-        body: JSON.stringify({ targetDogId: dogId }) // Now using targetDogId for dog profile
-      });
-  
-      if (response.ok) {
-        console.log('Dog liked successfully!');
-      } else {
-        console.error('Error liking the dog');
-      }
-    } catch (error) {
-      console.error('Failed to like the dog:', error);
-    }
-  };
-  
 
   return (
     <div className="dog-profile-card">
@@ -58,7 +35,7 @@ const DogProfile = ({ dog, onLike, onDiscard, onViewProfile }) => {
           <div className="action-buttons">
             <button className="discard-btn" onClick={() => onDiscard(dog.id)}>❌</button>
             <button className="view-btn" onClick={() => onViewProfile(dog.id)}>👁️</button>
-            <button className="like-btn" onClick={() => handleLike(dog.id)}>❤️</button>
+            <button className="like-btn" onClick={() => onLike(dog.id)}>❤️</button>
           </div>
         </div>
       </TinderCard>
