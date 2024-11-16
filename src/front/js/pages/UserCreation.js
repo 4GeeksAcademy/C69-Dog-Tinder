@@ -1,122 +1,203 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Replacing useHistory with useNavigate
-import '../../styles/UserCreation.css'; // Ensure you have this CSS file for styling
+import { useNavigate } from 'react-router-dom';
+import '../../styles/UserCreation.css';
 
 export function UserCreation({ rememberMe }) {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
+    });
+    const [dogData, setDogData] = useState({
+        dog_name: '',
+        age: '',
+        breed: '',
+        bio: '',
+        photos: []
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [step, setStep] = useState(1);  // Step 1 for user registration, Step 2 for dog profile creation
     const navigate = useNavigate();
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        step === 1 
+          ? setFormData({ ...formData, [name]: value })
+          : setDogData({ ...dogData, [name]: value });
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true); // Set loading state
-        setError(null); // Reset previous error
+        setIsLoading(true); 
+        setError(null);
 
-        const requestData = {
-            username: `${formData.firstName} ${formData.lastName}`, // Combine first and last name
-            email: formData.email,
-            password: formData.password
-        };
-
-        try {
-            const response = await fetch('https://shiny-doodle-976pjp6r9q7r3x9jw-3001.app.github.dev/users/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                console.log(result.message); // Handle success
-                navigate('/login'); // Redirect to login after successful registration
-            } else {
-                const errorMsg = await response.json();
-                setError(errorMsg.message || 'Registration failed');
+        if (step === 1) {
+            // Validate password and confirm password match
+            if (formData.password !== formData.confirmPassword) {
+                setError("Passwords do not match.");
+                setIsLoading(false);
+                return;
             }
-        } catch (error) {
-            setError('An error occurred while processing your request.');
-        } finally {
-            setIsLoading(false); // Stop loading state
+
+            // Register user
+            const requestData = {
+                email: formData.email,
+                password: formData.password,
+                confirm_password: formData.confirmPassword
+            };
+
+            try {
+                const response = await fetch(`${process.env.BACKEND_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+            
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(result); // Verifica el resultado aquí
+                    localStorage.setItem('token', result.token);
+                    setStep(2); // Pasa al paso de creación del perfil del perro
+                } else {
+                    const errorMsg = await response.json();
+                    console.log(errorMsg); // Verifica el mensaje de error aquí
+                    setError(errorMsg.message || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Network error:', error); // Muestra errores de red
+                setError('An error occurred while processing your request.');            
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+            // Create dog profile
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('You must be logged in to create a dog profile.');
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${process.env.BACKEND_URL}/api/users/register`,  {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dogData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(result.message); // Handle success
+                    navigate('/swipe'); // Redirect to swipe page after successful profile creation
+                } else {
+                    const errorMsg = await response.json();
+                    setError(errorMsg.message || 'Dog profile creation failed');
+                }
+            } catch (error) {
+                setError('An error occurred while processing your request.');
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
     return (
         <div className="register-container">
-            <h2> Join now! </h2>
-            {error && <p className="error-message">{error}</p>} {/* Display error messages */}
+            <h2>{step === 1 ? 'Join now!' : 'Create Your Dog Profile'}</h2>
+            {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit} className="two-forms">
-                <div className="input-box">
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="input-box">
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="input-box">
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="input-box">
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                {step === 1 ? (
+                    <>
+                        <div className="input-box">
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="input-box">
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="input-box">
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="Confirm Password"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="input-box">
+                            <input
+                                type="text"
+                                name="dog_name"
+                                placeholder="Dog's Name"
+                                value={dogData.dog_name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="input-box">
+                            <input
+                                type="number"
+                                name="age"
+                                placeholder="Dog's Age"
+                                value={dogData.age}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="input-box">
+                            <input
+                                type="text"
+                                name="breed"
+                                placeholder="Dog's Breed"
+                                value={dogData.breed}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="input-box">
+                            <textarea
+                                name="bio"
+                                placeholder="Short Bio"
+                                value={dogData.bio}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </>
+                )}
                 <div className="input-box">
                     <input 
                         type="submit" 
                         className="submit" 
-                        value={isLoading ? "Signing Up..." : "Sign Up"} 
+                        value={isLoading ? "Processing..." : (step === 1 ? "Sign Up" : "Create Dog Profile")} 
                         disabled={isLoading} 
                     />
                 </div>
-                <div className="two-col">
-                    <div>
-                        <label htmlFor="register-check">
-                            <input type="checkbox" id="register-check" onChange={rememberMe} /> Remember Me 
-                        </label>
-                    </div>                   
-                </div>
             </form>
-            <div className="top">
-                <p>Already have an account? <a href="#" onClick={() => navigate('/dog-profile-creation')}>Login</a></p>
-            </div>
         </div>
     );
 }
+
+export default UserCreation;

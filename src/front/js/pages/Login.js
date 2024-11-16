@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Context } from '../store/appContext'; // Importa el contexto
 import '../../styles/Login.css';
 
-
-export const Login = ({ login }) => {
+export const Login = () => {
     const [loginData, setLoginData] = useState({ email: '', password: '' });
-    const navigate = useNavigate(); // Use navigate for routing
+    const navigate = useNavigate();
+    const { actions } = useContext(Context); // Accede a `actions` desde el contexto
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -16,7 +17,7 @@ export const Login = ({ login }) => {
         event.preventDefault();
 
         try {
-            const response = await fetch('https://shiny-doodle-976pjp6r9q7r3x9jw-3001.app.github.dev/users/login', {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -26,9 +27,8 @@ export const Login = ({ login }) => {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log('Login successful:', result);
-                login(result.token, result.userId); // Call login function passed as prop
-                navigate('/profiles'); // Redirect to profiles after successful login
+                actions.login(result.token, result.userId); // Llama a `login` desde `actions`
+                navigate('/profiles'); // Redirige después de un inicio de sesión exitoso
             } else {
                 console.log('Login failed');
             }

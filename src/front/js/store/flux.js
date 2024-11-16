@@ -8,32 +8,82 @@ const getState = ({ getStore, getActions, setStore }) => {
             loading: true, 
             userProfile: null,
             userSettings: null,
-
         },
+
         actions: {
-            // Fetch Dog Profiles for the current user
+            // Function to log in and store the token and user profile in the state
+            login: (token, userId) => {
+                setStore({ JWT_Token: token, userProfile: { id: userId } });
+                localStorage.setItem("token", token);
+                localStorage.setItem("userId", userId);
+            },
+
+            // Function to log out
+            logout: () => {
+                setStore({ JWT_Token: '', userProfile: null });
+                localStorage.removeItem("token");
+                localStorage.removeItem("userId");
+            },
+
+            // Function to create user profile (register user and create dog profile)
+            createUserProfile(userData, dogData) {
+                setStore({ loading: true });
+
+                fetch('/api/users/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to register');
+                    return response.json();
+                })
+                .then(result => {
+                    setStore({ JWT_Token: result.token });
+                    return fetch('/api/users/dog-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${result.token}`
+                        },
+                        body: JSON.stringify(dogData)
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to create dog profile');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Dog profile created successfully');
+                    setStore({ loading: false });
+                })
+                .catch(error => {
+                    console.error('Error creating user and dog profile:', error);
+                    setStore({ loading: false });
+                });
+            },
+
+            // Function to fetch the user's profile
             fetchUserProfile(userId) {
                 const store = getStore();
                 fetch(`/api/users/${userId}/profile`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${store.JWT_Token}` }
                 })
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to fetch profile');
                     return response.json();
                 })
                 .then(data => {
-                    setStore({ profiles: data.profiles, loading: false }); // Store fetched profiles
+                    setStore({ profiles: data.profiles, loading: false });
                 })
                 .catch(error => {
                     console.error('Error fetching profile:', error);
-                    setStore({ loading: false }); // Stop loading on error
+                    setStore({ loading: false });
                 });
             },
 
-            // Like a dog profile
+            // Function to like a dog profile
             likeProfile(dogId) {
                 const store = getStore();
                 fetch('/swipe/right', {
@@ -57,47 +107,43 @@ const getState = ({ getStore, getActions, setStore }) => {
                 .catch(error => console.error('Error liking profile:', error));
             },
 
-            // Discard a dog profile
+            // Function to discard a dog profile
             discardProfile(dogId) {
                 console.log(`Discarded dog with ID: ${dogId}`);
-                // Optionally, you could update the store to remove the discarded profile
+                // Optionally, update the store to remove the discarded profile
             },
 
-            //Remove a match
+            // Function to remove a match
             removeMatch(dogId) {
                 const store = getStore();
                 fetch(`/api/users/${store.userProfile.id}/unmatch/${dogId}`, {
                     method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${store.JWT_Token}` }
                 })
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to remove match');
                     return response.json();
                 })
                 .then(() => {
-                    const updatedMatches = store.matches.filter(matchId => matchId !== dogId);  // Remove the dog from the matches list
+                    const updatedMatches = store.matches.filter(matchId => matchId !== dogId);  
                     setStore({ matches: updatedMatches });
                     console.log(`Match removed: ${dogId}`);
                 })
                 .catch(error => console.error('Error removing match:', error));
             },
 
-            // View a full dog profile (e.g., navigate to another page)
+            // Function to view a full dog profile
             viewProfile(dogId) {
                 console.log(`Viewing full profile of dog with ID: ${dogId}`);
                 // Add navigation or modal logic to show the full profile
             },
 
-            // Fetch Messages between two users (for chat functionality)
+            // Function to fetch messages between two users (for chat functionality)
             fetchMessages(userId, partnerUserId) {
                 const store = getStore();
                 return fetch(`/api/messages/${userId}/${partnerUserId}`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}` 
-                    }
+                    headers: { 'Authorization': `Bearer ${store.JWT_Token}` }
                 })
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to fetch messages');
@@ -110,74 +156,66 @@ const getState = ({ getStore, getActions, setStore }) => {
                 .catch(error => console.error('Error fetching messages:', error));
             },
 
-            // Send a message to a playdate
-            sendMessages(userId, partnerUserId, messageInput) {
-                const messageContent = messageInput.value.trim();
-                if (messageContent) {
-                    const store = getStore();
-                    fetch('/api/messages', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${store.JWT_Token}` 
-                        },
-                        body: JSON.stringify({
-                            fromUserId: userId,
-                            toUserId: partnerUserId,
-                            content: messageContent
-                        })
+            // Function to send a message
+            sendMessages(userId, partnerUserId, messageContent) {
+                const store = getStore();
+                fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${store.JWT_Token}` 
+                    },
+                    body: JSON.stringify({
+                        fromUserId: userId,
+                        toUserId: partnerUserId,
+                        content: messageContent
                     })
-                    .then(response => {
-                        if (response.ok) {
-                            const actions = getActions();
-                            actions.fetchMessages(userId, partnerUserId); // Fetch updated messages after sending
-                        } else {
-                            alert('Failed to send message.');
-                        }
-                    })
-                    .catch(error => console.error('Error sending message:', error));
-                }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to send message');
+                    return response.json();
+                })
+                .then(data => {
+                    getActions().fetchMessages(userId, partnerUserId); // Fetch updated messages
+                })
+                .catch(error => console.error('Error sending message:', error));
             },
 
-            // Fetch Matches for the current user
+            // Function to fetch matches for the current user
             fetchMatches(userId) {
                 const store = getStore();
                 fetch(`/api/users/${userId}/matched`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${store.JWT_Token}` }
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
+                    if (!response.ok) throw new Error('Failed to fetch matches');
                     return response.json();
                 })
                 .then(data => {
-                    setStore({ matches: data.matches }); // Store the matches in state
+                    setStore({ matches: data.matches }); 
                 })
                 .catch(error => console.error('Error fetching matches:', error));
             },
 
-            // Fetch the current user's profile
+            // Function to fetch the current user's profile
             fetchCurrentUserProfile(userId) {
                 const store = getStore();
                 fetch(`/api/users/${userId}/profile`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${store.JWT_Token}` }
                 })
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to fetch profile');
                     return response.json();
                 })
                 .then(data => {
-                    setStore({ userProfile: data }); // Store the current user's profile
+                    setStore({ userProfile: data }); 
                 })
                 .catch(error => console.error('Error fetching profile:', error));
             },
 
-            // Update the current user's profile
+            // Function to update the current user's profile
             updateUserProfile(userId, updatedProfileData) {
                 const store = getStore();
                 fetch(`/api/users/${userId}/profile`, {
@@ -193,46 +231,45 @@ const getState = ({ getStore, getActions, setStore }) => {
                     return response.json();
                 })
                 .then(data => {
-                    setStore({ userProfile: data }); // Update the user's profile in state
+                    setStore({ userProfile: data });
                 })
                 .catch(error => console.error('Error updating profile:', error));
             },
+
+            // Function to fetch user settings
             fetchUserSettings(userId) {
                 const store = getStore();
                 fetch(`/api/users/${userId}/settings`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.JWT_Token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${store.JWT_Token}` }
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error('Failed to fetch profile');
+                    if (!response.ok) throw new Error('Failed to fetch settings');
                     return response.json();
                 })
                 .then(data => {
-                    // Convert age in months to years and months
-                    const years = Math.floor(data.age / 12);  // Get years
-                    const months = data.age % 12;  // Get remaining months
-
-                    setStore({ userSettings: {
+                    const years = Math.floor(data.age / 12);
+                    const months = data.age % 12;
+                    setStore({
+                        userSettings: {
                             ...data,
-                            ageYears: years,    // Add separate age in years
-                            ageMonths: months   // Add separate age in months
-                        } 
-                    }); 
+                            ageYears: years,
+                            ageMonths: months
+                        }
+                    });
                 })
                 .catch(error => console.error('Error fetching settings:', error));
             },
 
+            // Function to update user settings
             updateUserSettings(userId, updatedSettingsData) {
                 const store = getStore();
-                   // Convert years and months to total months
-                   const totalMonths = (parseInt(updatedSettingsData.ageYears) * 12) + parseInt(updatedSettingsData.ageMonths || 0);
+                const totalMonths = (parseInt(updatedSettingsData.ageYears) * 12) + parseInt(updatedSettingsData.ageMonths || 0);
 
-                   const settingsPayload = {
-                       ...updatedSettingsData,
-                       age: totalMonths  // Send total months to the backend
-                   };
+                const settingsPayload = {
+                    ...updatedSettingsData,
+                    age: totalMonths
+                };
 
                 fetch(`/api/users/${userId}/settings`, {
                     method: 'PUT',
@@ -240,14 +277,14 @@ const getState = ({ getStore, getActions, setStore }) => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${store.JWT_Token}`
                     },
-                    body: JSON.stringify(updatedSettingsData)
+                    body: JSON.stringify(settingsPayload)
                 })
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to update settings');
                     return response.json();
                 })
                 .then(data => {
-                    setStore({ userSettings: data }); 
+                    setStore({ userSettings: data });
                 })
                 .catch(error => console.error('Error updating settings:', error));
             }

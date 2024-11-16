@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const DogProfileCreation = () => {
+export function DogProfileCreation() {
     const [formData, setFormData] = useState({
-        dogName: '',
-        breed: '',
+        dog_name: '',
         age: '',
+        breed: '',
         bio: '',
-        photos: '' // You can handle multiple photos or a single one for now
+        photos: ''
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -23,21 +23,33 @@ const DogProfileCreation = () => {
         setIsLoading(true);
         setError(null);
 
+        const token = localStorage.getItem('token'); // Assuming token is stored after registration
+
+        const requestData = {
+            dog_name: formData.dog_name,
+            age: formData.age,
+            breed: formData.breed,
+            bio: formData.bio,
+            photos: formData.photos.split(',')  // Assuming comma-separated photo URLs
+        };
+
         try {
-            const response = await fetch('https://shiny-doodle-976pjp6r9q7r3x9jw-3001.app.github.dev/users/<userId>/dog', {
+            const response = await fetch(`${process.env.BACKEND_URL}/users/dog-profile`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(dogData)
             });
 
             if (response.ok) {
-                navigate('/swipe'); // Redirect to swipe page after successfully creating the dog profile
+                const result = await response.json();
+                console.log(result.message);
+                navigate('/'); // Redirect to home or swipe page
             } else {
                 const errorMsg = await response.json();
-                setError(errorMsg.message || 'Failed to create dog profile');
+                setError(errorMsg.message || 'Dog profile creation failed');
             }
         } catch (error) {
             setError('An error occurred while processing your request.');
@@ -47,26 +59,16 @@ const DogProfileCreation = () => {
     };
 
     return (
-        <div className="dog-profile-container">
-            <h2>Create Your Dog's Profile</h2>
+        <div className="profile-container">
+            <h2>Create your Dog's Profile</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="input-box">
                     <input
                         type="text"
-                        name="dogName"
-                        placeholder="Dog's Name"
-                        value={formData.dogName}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="input-box">
-                    <input
-                        type="text"
-                        name="breed"
-                        placeholder="Breed"
-                        value={formData.breed}
+                        name="dog_name"
+                        placeholder="Dog Name"
+                        value={formData.dog_name}
                         onChange={handleChange}
                         required
                     />
@@ -84,8 +86,18 @@ const DogProfileCreation = () => {
                 <div className="input-box">
                     <input
                         type="text"
+                        name="breed"
+                        placeholder="Breed"
+                        value={formData.breed}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="input-box">
+                    <input
+                        type="text"
                         name="bio"
-                        placeholder="A little about your dog"
+                        placeholder="Bio"
                         value={formData.bio}
                         onChange={handleChange}
                     />
@@ -94,7 +106,7 @@ const DogProfileCreation = () => {
                     <input
                         type="text"
                         name="photos"
-                        placeholder="Photos URL" // You can handle file upload later
+                        placeholder="Photos (comma-separated URLs)"
                         value={formData.photos}
                         onChange={handleChange}
                     />
@@ -103,13 +115,14 @@ const DogProfileCreation = () => {
                     <input
                         type="submit"
                         className="submit"
-                        value={isLoading ? 'Saving...' : 'Create Profile'}
+                        value={isLoading ? "Creating..." : "Create Profile"}
                         disabled={isLoading}
                     />
                 </div>
             </form>
         </div>
     );
-};
+}
+
 
 export default DogProfileCreation;
