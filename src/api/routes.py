@@ -1,16 +1,16 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
 from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from flask_cors import CORS
+from flask_cors import CORS  # Importing CORS
 from .models import db, User, Profile, DogProfile, Like, Message, Settings
 import requests
 import math
 import os
 from app import app
 
-CORS(app)
+# Enable CORS for the entire app
+CORS(app, resources={r"/*": {"origins": "https://effective-tribble-r4rgj66qpgvv2p5x4-3000.app.github.dev"}})
+
+# Initialize Blueprint and JWTManager
 api = Blueprint('routes', __name__)
 jwt = JWTManager(app)
 
@@ -160,11 +160,6 @@ def swipe_right():
     if not target_dog:
         return jsonify({"message": "Dog not found"}), 404
     
-    # Ensure the target dog exists (DogProfile)
-    target_dog = DogProfile.query.get(data['targetDogId'])
-    if not target_dog:
-        return jsonify({"message": "Dog not found"}), 404
-    
     # Create a new "like" entry where the user likes the target dog
     new_like = Like(user_id=current_user_id, target_user_id=target_dog.id)
     db.session.add(new_like)
@@ -243,8 +238,7 @@ def get_geo_location(city, state):
         return None
     
 def haversine(lat1, lon1, lat2, lon2):
-    # copied the haversine formula off the internet... should put lat long to miles
-    R = 3956
+    R = 3956  # Earth radius in miles
 
     lat1_rad = math.radians(lat1)
     lon1_rad = math.radians(lon1)
@@ -258,4 +252,3 @@ def haversine(lat1, lon1, lat2, lon2):
 
     distance = R * c
     return distance
-

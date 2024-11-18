@@ -1,47 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaDog, FaHeart, FaComment, FaCog, FaUser } from 'react-icons/fa'; // Icons for navbar
+import { FaDog, FaHeart, FaComment, FaCog, FaUser } from 'react-icons/fa';
 import '../../styles/Navbar.css'; 
 
 const Navbar = () => {
   return (
-    <>
-      {/* Bottom Navbar */}
-      <nav className="navbar navbar-light fixed-bottom app-navbar">
-        <div className="container-fluid justify-content-around">
-          
-          {/* Profiles Page */}
-          <Link className="nav-item text-center" to="/swipe">
-            <FaDog className="navbar-icon" />
-            <span className="navbar-text">Profiles</span>
-          </Link>
-
-          {/* Playdates Page */}
-          <Link className="nav-item text-center" to="/playdates">
-            <FaHeart className="navbar-icon" />
-            <span className="navbar-text">Playdates</span>
-          </Link>
-
-          {/* Chat Page */}
-          <Link className="nav-item text-center" to="/chatPage">
-            <FaComment className="navbar-icon" />
-            <span className="navbar-text">Chats</span>
-          </Link>
-
-          {/* My Profile */}
-          <Link className="nav-item text-center" to="/my-profile">
-            <FaUser className="navbar-icon" />
-            <span className="navbar-text">My Profile</span>
-          </Link>
-
-          {/* Settings Page */}
-          <Link className="nav-item text-center" to="/settings">
-            <FaCog className="navbar-icon" />
-            <span className="navbar-text">Settings</span>
-          </Link>
-        </div>
-      </nav>
-    </>
+    <nav className="navbar navbar-light fixed-bottom app-navbar">
+      <div className="container-fluid justify-content-around">
+        <Link to="/swipe" className="nav-item">
+          <FaDog className="navbar-icon" />
+          <span>Profiles</span>
+        </Link>
+        <Link to="/playdates" className="nav-item">
+          <FaHeart className="navbar-icon" />
+          <span>Playdates</span>
+        </Link>
+        <Link to="/chatPage" className="nav-item">
+          <FaComment className="navbar-icon" />
+          <span>Chats</span>
+        </Link>
+        <Link to="/my-profile" className="nav-item">
+          <FaUser className="navbar-icon" />
+          <span>My Profile</span>
+        </Link>
+        <Link to="/settings" className="nav-item">
+          <FaCog className="navbar-icon" />
+          <span>Settings</span>
+        </Link>
+      </div>
+    </nav>
   );
 };
 
