@@ -9,7 +9,7 @@ const DogSwipePage = () => {
   useEffect(() => {
     const fetchAvailableDogs = async () => {
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/dogs/available`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/dogs/available`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

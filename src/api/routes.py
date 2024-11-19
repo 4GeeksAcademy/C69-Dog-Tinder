@@ -1,18 +1,19 @@
 from flask import Flask, request, jsonify, Blueprint
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_jwt_extended import (
+    create_access_token, jwt_required, get_jwt_identity
+)
 from flask_cors import CORS  # Importing CORS
 from .models import db, User, Profile, DogProfile, Like, Message, Settings
 import requests
 import math
 import os
-from app import app
+# from app import app
 
 # Enable CORS for the entire app
-CORS(app, resources={r"/*": {"origins": "https://effective-tribble-r4rgj66qpgvv2p5x4-3000.app.github.dev"}})
 
 # Initialize Blueprint and JWTManager
 api = Blueprint('routes', __name__)
-jwt = JWTManager(app)
+CORS(api)
 
 @api.before_app_request
 def create_tables():
@@ -35,6 +36,7 @@ def register():
     new_user = User(username=data['email'], email=data['email'], password=data['password'])
     db.session.add(new_user)
     db.session.commit()
+    db.session.refresh(new_user)
         
     # Return JWT Token for authentication
     access_token = create_access_token(identity=new_user.id)
@@ -46,6 +48,7 @@ def register():
 @jwt_required()
 def add_dog_profile():
     user_id = get_jwt_identity()
+    print(user_id)
     data = request.get_json()
 
     # Create a new dog profile
@@ -59,6 +62,7 @@ def add_dog_profile():
     )
     db.session.add(new_dog)
     db.session.commit()
+    db.session.refresh(new_dog)
 
     return jsonify({"message": "Dog profile created successfully", "dog_id": new_dog.id}), 201
 

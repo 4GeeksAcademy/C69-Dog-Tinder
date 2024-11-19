@@ -28,7 +28,7 @@ export const Login = () => {
             if (response.ok) {
                 const result = await response.json();
                 actions.login(result.token, result.userId); // Llama a `login` desde `actions`
-                navigate('/profiles'); // Redirige después de un inicio de sesión exitoso
+                navigate('/swipe'); // Redirige después de un inicio de sesión exitoso
             } else {
                 console.log('Login failed');
             }
