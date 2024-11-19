@@ -6,11 +6,10 @@ const DogSwipePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch available dogs when the component is mounted
   useEffect(() => {
     const fetchAvailableDogs = async () => {
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/dogs/available`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/dogs/available`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -19,7 +18,7 @@ const DogSwipePage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setDogs(data.available_dogs);
+          setDogs(data);
         } else {
           setError('Failed to load dogs');
         }
@@ -33,33 +32,19 @@ const DogSwipePage = () => {
     fetchAvailableDogs();
   }, []);
 
-  // Handler functions for like, discard, and view profile actions
   const handleLike = (id) => {
     console.log(`Liked dog with id: ${id}`);
-    // Add any additional logic for handling likes here, like calling an API
+    // Call API to like dog (e.g., send a POST request to /swipe/right)
   };
 
   const handleDiscard = (id) => {
     console.log(`Discarded dog with id: ${id}`);
-    // Add any additional logic for handling discards here
+    // Call API to discard dog (e.g., remove dog from UI or update state)
   };
 
-  const handleViewProfile = (id) => {
-    console.log(`Viewing profile of dog with id: ${id}`);
-    // Add any additional logic to view or navigate to the profile
-  };
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
-  // Show loading state
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  // Show error state if something went wrong
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  // Render the available dogs using the DogProfile component
   return (
     <div className="dog-swipe-page">
       {dogs.length === 0 ? (
@@ -67,11 +52,10 @@ const DogSwipePage = () => {
       ) : (
         dogs.map((dog) => (
           <DogProfile
-            key={dog.dog_id}
+            key={dog.id}
             dog={dog}
             onLike={handleLike} // Pass handleLike as prop
             onDiscard={handleDiscard} // Pass handleDiscard as prop
-            onViewProfile={handleViewProfile} // Pass handleViewProfile as prop
           />
         ))
       )}

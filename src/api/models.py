@@ -11,10 +11,15 @@ class User(db.Model):
     dogs = db.relationship('DogProfile', backref='owner', lazy=True)
     likes = db.relationship('Like', backref='user', lazy=True)
 
+    def __repr__(self):
+        return f"<User: {self.username}>"
+
 
 class DogProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Dog belongs to a user
+    # user = db.relationship("User")
+
     dog_name = db.Column(db.String(80), nullable=False)
     breed = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer)

@@ -18,8 +18,47 @@ export function DogProfileCreation() {
         setFormData({ ...formData, [name]: value });
     };
 
+    // Validate form fields
+    const validateForm = () => {
+        const { dog_name, age, breed, bio, photos } = formData;
+        if (!dog_name || !age || !breed || !bio || !photos) {
+            setError('All fields are required.');
+            return false;
+        }
+
+        // Check if age is a valid number
+        if (isNaN(age)) {
+            setError('Age must be a valid number.');
+            return false;
+        }
+
+        // Additional validation for photos (optional, based on your use case)
+        const photoUrls = photos.split(',');
+        for (let url of photoUrls) {
+            if (!isValidUrl(url.trim())) {
+                setError('One or more photo URLs are invalid.');
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    // Utility function to check if a string is a valid URL
+    const isValidUrl = (string) => {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        // if (!validateForm()) return; // Stop submission if validation fails
+
         setIsLoading(true);
         setError(null);
 
@@ -27,35 +66,39 @@ export function DogProfileCreation() {
 
         const requestData = {
             dog_name: formData.dog_name,
-            age: formData.age,
+            age: JSON.parse(formData.age),
             breed: formData.breed,
             bio: formData.bio,
-            photos: formData.photos.split(',')  // Assuming comma-separated photo URLs
+            photos: formData.photos.split(',').map((url) => url.trim()) // Clean URLs
         };
 
-        try {
-            const response = await fetch(`${process.env.BACKEND_URL}/users/dog-profile`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dogData)
-            });
+        const response = await fetch(`${process.env.BACKEND_URL}/api/users/dog-profile`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(requestData)
+        });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log(result.message);
-                navigate('/'); // Redirect to home or swipe page
-            } else {
-                const errorMsg = await response.json();
-                setError(errorMsg.message || 'Dog profile creation failed');
-            }
-        } catch (error) {
-            setError('An error occurred while processing your request.');
-        } finally {
-            setIsLoading(false);
+        console.log(requestData, token);
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log(result.message);
+            navigate('/'); // Redirect to home or swipe page
+        } else {
+            const errorMsg = await response.json();
+            setError(errorMsg.message || 'Dog profile creation failed');
         }
+        setIsLoading(false);
+        // try {
+            
+        // } catch (error) {
+        //     setError('An error occurred while processing your request.');
+        //     console.log(requestData);
+        // } finally {
+        // }
     };
 
     return (
@@ -63,6 +106,7 @@ export function DogProfileCreation() {
             <h2>Create your Dog's Profile</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit}>
+                {/* Form fields for dog details */}
                 <div className="input-box">
                     <input
                         type="text"
@@ -75,7 +119,7 @@ export function DogProfileCreation() {
                 </div>
                 <div className="input-box">
                     <input
-                        type="number"
+                        type="text"
                         name="age"
                         placeholder="Age"
                         value={formData.age}
@@ -94,12 +138,12 @@ export function DogProfileCreation() {
                     />
                 </div>
                 <div className="input-box">
-                    <input
-                        type="text"
+                    <textarea
                         name="bio"
                         placeholder="Bio"
                         value={formData.bio}
                         onChange={handleChange}
+                        required
                     />
                 </div>
                 <div className="input-box">
@@ -123,6 +167,5 @@ export function DogProfileCreation() {
         </div>
     );
 }
-
 
 export default DogProfileCreation;
