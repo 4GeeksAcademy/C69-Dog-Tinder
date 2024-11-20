@@ -21,7 +21,7 @@ const Navbar = () => {
         </Link>
         <Link to="/my-profile" className="nav-item">
           <FaUser className="navbar-icon" />
-          <span>My Profile</span>
+          <span>My Dog's Profile</span>
         </Link>
         <Link to="/settings" className="nav-item">
           <FaCog className="navbar-icon" />
