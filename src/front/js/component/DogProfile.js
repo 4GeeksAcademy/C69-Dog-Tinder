@@ -22,6 +22,7 @@ const DogProfile = ({ dog, onLike, onDiscard }) => {
         <div
           className="card"
           style={{ backgroundImage: `url(${dog.photos[0]})`, backgroundSize: 'cover' }}
+
         >
           <div className="dog-info">
             <h3>{dog.dog_name}</h3>
@@ -41,11 +42,11 @@ const DogProfile = ({ dog, onLike, onDiscard }) => {
 
 DogProfile.propTypes = {
   dog: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    dog_name: PropTypes.string.isRequired,
-    age: PropTypes.string.isRequired,
-    breed: PropTypes.string.isRequired,
-    photos: PropTypes.arrayOf(PropTypes.string).isRequired
+      id: PropTypes.number.isRequired,
+      dog_name: PropTypes.string.isRequired,
+      age: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Aceptar string o number
+      breed: PropTypes.string.isRequired,
+      photos: PropTypes.arrayOf(PropTypes.string).isRequired
   }).isRequired,
   onLike: PropTypes.func.isRequired,
   onDiscard: PropTypes.func.isRequired

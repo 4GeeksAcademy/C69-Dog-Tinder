@@ -1,0 +1,147 @@
+/* Container styling for the user profile */
+.user-profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 100vh; /* Full viewport height */
+    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff); /* Match home page gradient */
+    animation: fadeIn 1s ease-in-out; /* Smooth fade-in */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+/* User info header */
+.user-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-info h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.user-info .edit-button {
+    background: linear-gradient(135deg, #333, #154a83);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-info .edit-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Dog profile section */
+.dog-profile {
+    width: 90%;
+    max-width: 600px;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.dog-profile h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* Label styling */
+.dog-info label {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #154a83;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Text content and inputs */
+.dog-info p {
+    font-size: 1rem;
+    color: #4b3f3f;
+    margin-bottom: 15px;
+}
+
+.dog-info input,
+.dog-info textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dog-info textarea {
+    height: 80px; /* Larger input for bio */
+    resize: none; /* Prevent resizing */
+}
+
+/* Dog photo gallery */
+.dog-photos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.dog-photos img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Save button styling */
+.save-button {
+    background: linear-gradient(135deg, #4b3f3f, #154a83);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.save-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dog-profile {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .dog-photos img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .save-button,
+    .user-info .edit-button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}

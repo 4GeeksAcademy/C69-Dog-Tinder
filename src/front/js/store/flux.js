@@ -83,6 +83,30 @@ const getState = ({ getStore, getActions, setStore }) => {
                 });
             },
 
+
+             // Function to fetch the dog's profile
+             fetchDogProfile: async (userId) => {
+                try {
+                    if (!userId) throw new Error('User ID is undefined');
+
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/dog-profile`, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    });
+
+                    if (!response.ok) throw new Error('Failed to fetch dog profile');
+
+                    const data = await response.json();
+                    setStore({ dogProfile: data });
+                    console.log('Dog profile fetched successfully:', data);
+                } catch (error) {
+                    console.error('Error fetching dog profile:', error);
+                }
+            },
+
+            
             // Function to like a dog profile
             likeProfile(dogId) {
                 const store = getStore();
