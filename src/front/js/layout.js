@@ -68,7 +68,7 @@ const Layout = () => {
                     
                     <Route path="/swipe" element={userId ? <DogSwipePage /> : <Navigate to="/login" />} />
                     <Route path="/settings" element={userId ? <SettingsPage /> : <Navigate to="/login" />} />
-                    <Route path="/playdates" element={userId ? <Playdates userId={userId} /> : <Navigate to="/login" />} />
+                    <Route path="/playdates/:id" element={userId ? <Playdates userId={userId} /> : <Navigate to="/login" />} />
                     <Route path="/my-profile" element={userId ? <UserProfile /> : <Navigate to="/login" />} />
                     <Route path="*" element={<h1>Not found!</h1>} />
                 </Routes>
