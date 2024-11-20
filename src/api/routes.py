@@ -165,23 +165,26 @@ def swipe_right():
         return jsonify({"message": "Dog not found"}), 404
     
     # Create a new "like" entry where the user likes the target dog
-    new_like = Like(user_id=current_user_id, target_user_id=target_dog.id)
+    new_like = Like(user_id=current_user_id, target_dog_id=target_dog.id)
     db.session.add(new_like)
     db.session.commit()
 
     return jsonify({"message": f"You liked {target_dog.dog_name}'s profile!"}), 200
 
 
-@api.route('/users/<int:user_id>/matches', methods=['GET'])
+@api.route('/users/current_user/matches', methods=['GET'])
 @jwt_required()
-def get_matches(user_id):
+def get_matches():
     # Find all dogs the user has liked
+    user_id=get_jwt_identity()
     likes_given = Like.query.filter_by(user_id=user_id).all()
+    current_user=User.query.filter_by(id=user_id).first()
 
     matches = []
     for like in likes_given:
         # Check if the target dog (liked dog) has liked back the user's dog
-        reciprocal_like = Like.query.filter_by(user_id=like.target_dog.user_id, target_dog_id=like.user.dogs[0].id).first()
+        target_dog=DogProfile.query.filter_by(id=like.target_dog_id).first()
+        reciprocal_like = Like.query.filter_by(user_id=target_dog.owner.id, target_dog_id=current_user.dogs[0].id).first()
         
         if reciprocal_like:
             # Fetch details of the matched dog
@@ -200,7 +203,7 @@ def get_matches(user_id):
 @api.route('/users/<int:user_id>/unmatch/<int:dog_id>', methods=['DELETE'])
 @jwt_required()
 def unmatch(user_id, dog_id):
-    like = Like.query.filter_by(user_id=user_id, target_user_id=dog_id).first()
+    like = Like.query.filter_by(user_id=user_id, target_dog_id=dog_id).first()
     if like:
         db.session.delete(like)
         db.session.commit()

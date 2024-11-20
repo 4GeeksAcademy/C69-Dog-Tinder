@@ -1,64 +1,123 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from "react-router-dom";
-import { Context } from '../store/appContext';
-import '../../styles/Playdates.css'; 
+import React, { useState, useEffect } from "react";
 
-const Playdates = ({ userId }) => {
-  const { store, actions } = useContext(Context);
-  const [playdates, setPlaydates] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Playdates = () => {
+  const [matches, setMatches] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);  // Track loading state
 
-  
+ // Assume the user ID is available (could be from auth state or local storage)
 
-useEffect(() => {
-    const fetchPlaydates = async () => {
+  useEffect(() => {
+    // Fetch the user's matches
+    const fetchMatches = async () => {
       try {
-        const response = await fetch(`/users/${userId}/matched`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/users/current_user/matches`, {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            'Content-Type': 'application/json',
+          },
         });
+
+        if (!response.ok) {
+          throw new Error('Error fetching matches');
+        }
+
         const data = await response.json();
-        setPlaydates(data.matches);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching playdates:', error);
+        setMatches(data);
+      } catch (err) {
+        setError(err.message);
+        console.error(err);
+      } finally {
+        setLoading(false); // Set loading to false after fetching is complete
       }
     };
 
-    fetchPlaydates();
-  }, [userId]);
+    fetchMatches();
+  }, []);
 
-  if (loading) {
-    return <p>Loading playdates...</p>;
-  }
+  // Handle unmatch
+  const handleUnmatch = async (dogId) => {
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/unmatch/${dogId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-  // Handling empty state when there are no playdates
-  if (!loading && playdates.length === 0) {
-    return <p>No playdates found. Try liking more dogs!</p>;
-  }
+      if (!response.ok) {
+        throw new Error('Error unmatching the dog');
+      }
 
-  
-  const handleRemoveMatch = (dogId) => {
-    actions.removeMatch(dogId);  // Access the removeMatch action from context
-    setPlaydates(playdates.filter(dog => dog.id !== dogId));  // Remove the dog from local state
+      setMatches((prevMatches) =>
+        prevMatches.filter((match) => match.dog_id !== dogId)
+      );
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
   };
 
+  // Navigate to the match's profile
+  const viewProfile = (dogId) => {
+    window.location.href = `/dog-profile/${dogId}`;
+  };
+
+  // Navigate to chat page
+  const startChat = (dogOwnerId) => {
+    window.location.href = `/messages/${userId}/${dogOwnerId}`;
+  };
+
+  if (loading) return <div>Loading...</div>;  // Show loading message
+  if (error) return <div className="error-message">{error}</div>;  // Show error message
+
   return (
-    <div className="playdates-list">
-      {playdates.map((dog) => (
-        <div key={dog.id} className="dog-profile">
-          <img src={dog.photo || 'default-dog.png'} alt={`${dog.name}'s profile`} />
-          <h2>{dog.name}</h2>
-          <p>Age: {dog.age}</p>
-          <p>Breed: {dog.breed}</p>
-          <button onClick={() => handleRemoveMatch(dog.id)}>Remove Match</button>
-          <button onClick={() => actions.viewProfile(dog.id)}>View Profile</button>
+    <div className="playdates-container">
+      <h2>Your Matches</h2>
+      {matches.length === 0 ? (
+        <p>You have no matches yet.</p>
+      ) : (
+        <div className="match-list">
+          {matches.map((match) => (
+            <div key={match.dog_id} className="match-card">
+              <img
+                src={match.photos[0]} // Display the first photo of the dog
+                alt={match.dog_name}
+                className="match-image"
+              />
+              <div className="match-details">
+                <h3>{match.dog_name}</h3>
+                <p>{match.bio}</p>
+                <p>Breed: {match.breed}</p>
+                <div className="match-actions">
+                  <button
+                    className="view-profile-btn"
+                    onClick={() => viewProfile(match.dog_id)}
+                  >
+                    View Profile
+                  </button>
+                  <button
+                    className="start-chat-btn"
+                    onClick={() => startChat(match.dog_owner_id)}
+                  >
+                    Chat
+                  </button>
+                  <button
+                    className="unmatch-btn"
+                    onClick={() => handleUnmatch(match.dog_id)}
+                  >
+                    Unmatch
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };
-
 
 export default Playdates;

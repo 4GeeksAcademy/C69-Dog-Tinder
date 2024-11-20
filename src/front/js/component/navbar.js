@@ -11,7 +11,7 @@ const Navbar = () => {
           <FaDog className="navbar-icon" />
           <span>Profiles</span>
         </Link>
-        <Link to="/playdates" className="nav-item">
+        <Link to="/playdates/:id" className="nav-item">
           <FaHeart className="navbar-icon" />
           <span>Playdates</span>
         </Link>
