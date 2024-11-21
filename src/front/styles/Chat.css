@@ -1,0 +1,30 @@
+/* Sent messages (messages from the user) */
+.message.sent {
+    background-color: orange;
+    color: white;
+    text-align: right;  /* Optional: Align messages sent by the user to the right */
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    margin-left: auto;  /* Align to the right */
+  }
+  
+  /* Received messages (messages from the partner) */
+  .message.received {
+    background-color: lightblue;
+    color: black;
+    text-align: left;  /* Optional: Align messages received to the left */
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    margin-right: auto;  /* Align to the left */
+  }
+  
+  .timestamp {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+  }
+  

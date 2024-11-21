@@ -1,8 +1,10 @@
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from "react";
+import '../../styles/Chat.css';
 
 const ChatPage = () => {
-  const { partnerUserId } = useParams();
+  const { partnerUserId } = useParams();  // partnerUserId is from the URL
+  console.log(partnerUserId)
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState(null);
@@ -67,7 +69,7 @@ const ChatPage = () => {
       setMessages((prevMessages) => [
         ...prevMessages,
         {
-          from_user_id: data.from_user_id, // Adjust this according to your backend response
+          from_user_id: data.from_user_id,  // Adjust this according to your backend response
           to_user_id: data.to_user_id,
           content: data.content,
           timestamp: new Date().toISOString(),
@@ -92,7 +94,7 @@ const ChatPage = () => {
           {messages.map((message) => (
             <div
               key={message.timestamp}  // It's better to use timestamp or a unique ID as key
-              className={`message ${message.from_user_id === localStorage.getItem("user_id") ? "sent" : "received"}`}
+              className={`message ${Number(message.from_user_id) !== Number(partnerUserId) ? "sent" : "received"}`}
             >
               <p>{message.content}</p>
               <span className="timestamp">{new Date(message.timestamp).toLocaleString()}</span>
