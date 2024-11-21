@@ -255,6 +255,7 @@ def send_message():
     
     # Get the data from the request
     data = request.get_json()
+    
     to_user_id = data.get('to_user_id')
     content = data.get('content')
 
@@ -272,7 +273,12 @@ def send_message():
         # Save the message to the database
         db.session.add(message)
         db.session.commit()
-        return jsonify({"msg": "Message sent successfully"}), 201
+        return jsonify({
+            "from_user_id": message.from_user_id,
+            "to_user_id": message.to_user_id,
+            "content": message.content,
+            "timestamp": message.timestamp.isoformat()  # Return timestamp in ISO format
+        }), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "Error sending message", "error": str(e)}), 500
