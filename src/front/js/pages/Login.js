@@ -1,12 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Context } from '../store/appContext'; // Importa el contexto
+import { Context } from '../store/appContext'; 
 import '../../styles/Login.css';
 
 export const Login = () => {
     const [loginData, setLoginData] = useState({ email: '', password: '' });
     const navigate = useNavigate();
-    const { actions } = useContext(Context); // Accede a `actions` desde el contexto
+    const { actions } = useContext(Context); 
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -27,8 +27,8 @@ export const Login = () => {
 
             if (response.ok) {
                 const result = await response.json();
-                actions.login(result.token, result.userId); // Llama a `login` desde `actions`
-                navigate('/swipe'); // Redirige después de un inicio de sesión exitoso
+                actions.login(result.token, result.userId); 
+                navigate('/swipe'); 
             } else {
                 console.log('Login failed');
             }

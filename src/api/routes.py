@@ -3,7 +3,7 @@ from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity
 )
 from flask_cors import CORS  # Importing CORS
-from .models import db, User, Profile, DogProfile, Like, Message, Settings
+from .models import db, User,  DogProfile, Like, Message, Settings
 import requests
 import math
 import os
@@ -79,6 +79,57 @@ def login():
         return jsonify({"message": "Invalid email or password"}), 401
 
 
+@api.route('/users/dog-profile', methods=['GET'])
+@jwt_required()
+def get_user_dog_profile():
+    user_id = get_jwt_identity()
+
+    # Find the dog profile associated with the authenticated user
+    dog_profile = DogProfile.query.filter_by(user_id=user_id).first()
+
+    if not dog_profile:
+        return jsonify({"message": "No dog profile found"}), 404
+
+    # Returns the dog's profile in JSON format
+    return jsonify({
+        "dog_name": dog_profile.dog_name,
+        "age": dog_profile.age,
+        "breed": dog_profile.breed,
+        "bio": dog_profile.bio,
+        "photos": dog_profile.photos.split(',') if dog_profile.photos else [],
+        "city": dog_profile.city,
+        "state": dog_profile.state,
+    }), 200
+
+
+@api.route('/users/dog-profile', methods=['PUT'])
+@jwt_required()
+def update_dog_profile():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    dog_profile = DogProfile.query.filter_by(user_id=user_id).first()
+    if not dog_profile:
+        return jsonify({"message": "No dog profile found"}), 404
+
+    # Actualiza los datos del perfil
+    dog_profile.dog_name = data.get('dog_name', dog_profile.dog_name)
+    dog_profile.age = data.get('age', dog_profile.age)
+    dog_profile.breed = data.get('breed', dog_profile.breed)
+    dog_profile.bio = data.get('bio', dog_profile.bio)
+    dog_profile.photos = ','.join(data['photos']) if 'photos' in data else dog_profile.photos
+
+    db.session.commit()
+    return jsonify({
+        "dog_name": dog_profile.dog_name,
+        "age": dog_profile.age,
+        "breed": dog_profile.breed,
+        "bio": dog_profile.bio,
+        "photos": dog_profile.photos.split(',') if dog_profile.photos else [],
+    }), 200
+
+
+
 @api.route('/dogs/available', methods=['GET'])
 @jwt_required()
 def get_available_dogs():
@@ -117,23 +168,6 @@ def get_user_settings(user_id):
         "temperment": settings.temperment,
         "looking_for": settings.looking_for,
     }), 200
-
-
-@api.route('/users/<int:user_id>/profile', methods=['PUT'])
-@jwt_required()
-def update_user_profile(user_id):
-    data = request.get_json()
-    profile = Profile.query.filter_by(user_id=user_id).first()
-    profile.bio = data.get('bio', profile.bio)
-    profile.age = data.get('age', profile.age)
-    profile.breed=data.get('breed', profile.breed)
-    profile.city=data.get('city', profile.city)
-    profile.state=data.get('state', profile.state)
-    profile.temperment=data.get('temperment', profile.temperment)
-    profile.looking_for=data.get('looking_for', profile.looking_for)
-    profile.photos = ','.join(data.get('photos', []))  # This assumes URLS might need change later
-    db.session.commit()
-    return jsonify({"message": "Profile updated successfully"}), 200
 
 
 @api.route('/users/<int:user_id>/settings', methods=['PUT'])

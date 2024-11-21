@@ -8,7 +8,7 @@ import ChatPage from "./pages/chatPage";
 import injectContext, { Context } from "./store/appContext";
 import Navbar from "./component/navbar";
 import { Footer } from "./component/footer";
-import { UserCreation } from './pages/UserCreation';
+import { SignUp } from './pages/SignUp';
 import DogProfileCreation from './pages/DogProfileCreation';
 import { Login } from './pages/Login';
 import DogProfile from "./component/DogProfile";
@@ -53,18 +53,19 @@ const Layout = () => {
                     <Route path="/single/:theid" element={<Single />} />
                     <Route path="/chat/:partnerUserId" element={ <ChatPage /> } />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<UserCreation />} />
+                    <Route path="/signup" element={<SignUp />} />
                     <Route path="/dog-profile-creation" element={<DogProfileCreation />} />
                     
                     {/* Usa datos dinámicos para DogProfile */}
+
                     <Route 
-                        path="/dog-profile/:id" 
-                        element={
-                            userId && dogProfile 
-                                ? <DogProfile dog={dogProfile} onLike={handleLike} onDiscard={handleDiscard} onViewProfile={handleViewProfile} /> 
-                                : <Navigate to="/login" />
-                        } 
-                    />
+    path="/dog-profile/:id" 
+    element={
+        userId && dogProfile?.id
+            ? <DogProfile dog={dogProfile} onLike={handleLike} onDiscard={handleDiscard} onViewProfile={handleViewProfile} /> 
+            : <Navigate to="/login" />
+    } 
+/>
                     
                     <Route path="/swipe" element={userId ? <DogSwipePage /> : <Navigate to="/login" />} />
                     <Route path="/settings" element={userId ? <SettingsPage /> : <Navigate to="/login" />} />

@@ -1,0 +1,114 @@
+/* Main container for profile creation */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff);
+    padding: 20px;
+}
+
+/* Page title */
+.profile-container h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #154a83;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Error message styling */
+.error-message {
+    color: red;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Form styling */
+form {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Input box styling */
+.input-box {
+    margin-bottom: 20px;
+}
+
+.input-box input,
+.input-box textarea {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    border: 2px solid #ccc;
+    border-radius: 50px;
+    color: #333;
+    background-color: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    transition: border 0.3s ease;
+}
+
+/* Textarea specific styling */
+.input-box textarea {
+    border-radius: 15px; /* Rounded corners for text area */
+    height: 120px; /* Larger height */
+    resize: none; /* Prevent resizing */
+}
+
+.input-box input:focus,
+.input-box textarea:focus {
+    border-color: #154a83;
+    outline: none;
+}
+
+/* Submit button styling */
+.submit {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: white;
+    background-color: #154a83;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.submit:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.submit:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    form {
+        padding: 20px;
+    }
+
+    .profile-container h2 {
+        font-size: 2rem;
+    }
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

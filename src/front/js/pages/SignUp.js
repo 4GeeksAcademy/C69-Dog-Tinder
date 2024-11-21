@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../styles/UserCreation.css';
+import '../../styles/SignUp.css';
 
-export function UserCreation({ rememberMe }) {
+
+export function SignUp({ rememberMe }) {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         confirmPassword: ''
     });
     
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -21,7 +23,6 @@ export function UserCreation({ rememberMe }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
 
 
             // Validate password and confirm password match
@@ -48,7 +49,7 @@ export function UserCreation({ rememberMe }) {
             
                 if (response.status == 201) {
                     const result = await response.json();
-                    console.log(result); // Verifica el resultado aquí
+                    console.log(result); // Verify result
                     localStorage.setItem('token', result.token);
                     navigate("/dog-profile-creation")
                 } else {
@@ -114,8 +115,11 @@ export function UserCreation({ rememberMe }) {
                     />
                 </div>
             </form>
+            <div className="top">
+                <p>Already a member? <a href="#" onClick={() => navigate('/login')}>Login</a></p>
+            </div>
         </div>
     );
 }
 
-export default UserCreation;
+export default SignUp;

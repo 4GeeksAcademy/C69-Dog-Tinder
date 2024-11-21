@@ -58,7 +58,7 @@ h2 {
     padding: 15px;
     border-radius: 50px;
     background: linear-gradient(135deg, #333, #154a83); /* Gradient similar to buttons */
-    color: white !important; /* Force white text */
+    color: white !important; 
     font-size: 1.2rem;
     font-weight: bold;
     text-align: center;

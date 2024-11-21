@@ -1,87 +1,150 @@
-/* Container for the playdates list */
-.playdates-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
+/* Main container for Playdates */
+.playdates-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
   background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff);
-  min-height: 100vh;
-}
-
-/* Individual dog profile card */
-.dog-profile {
-  background: white;
-  border-radius: 15px;
   padding: 20px;
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
-  max-width: 300px;
 }
 
-/* Hover effect for the dog profile card */
-.dog-profile:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Dog profile image */
-.dog-profile img {
-  width: 100%;
-  height: auto;
-  border-radius: 15px;
-  margin-bottom: 15px;
-}
-
-/* Dog name styling */
-.dog-profile h2 {
-  font-size: 1.5rem;
+/* Page title */
+.playdates-container h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for text */
 }
 
-/* Dog details styling */
-.dog-profile p {
+/* Message for no matches */
+.playdates-container p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 20px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* List of match cards */
+.match-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
+  gap: 30px;
+  width: 90%;
+  max-width: 1200px; /* Limits the width of the list */
+}
+
+/* Match card styling */
+.match-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.8)); /* Smooth gradient */
+  border-radius: 15px;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  backdrop-filter: blur(10px); /* Blur effect for a modern look */
+  border: 1px solid rgba(180, 188, 223, 0.5); /* Subtle border */
+}
+
+.match-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Match image */
+.match-image {
+  width: 90%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 2px solid rgba(21, 74, 131, 0.5);
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+/* Match details */
+.match-details {
+  padding: 20px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.match-details h3 {
+  font-size: 1.8rem;
+  color: #154a83;
+  margin-bottom: 10px;
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.match-details p {
   font-size: 1rem;
   color: #555;
   margin-bottom: 10px;
+  line-height: 1.5;
 }
 
-/* Buttons styling */
-.dog-profile button {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 50px;
+/* Actions container */
+.match-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Buttons */
+.match-actions button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: bold;
   border: none;
+  border-radius: 50px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Button for removing match */
-.dog-profile button:first-of-type {
-  background-color: #4b3f3f;
-  color: white;
-}
-
-.dog-profile button:first-of-type:hover {
-  background-color: #333;
-}
-
-/* Button for viewing profile */
-.dog-profile button:last-of-type {
+/* View Profile button */
+.view-profile-btn {
   background-color: #154a83;
   color: white;
 }
 
-.dog-profile button:last-of-type:hover {
-  background-color: #003366;
+.view-profile-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 15px rgba(21, 74, 131, 0.5);
 }
 
-/* Responsive design: ensures proper spacing on small screens */
-@media (max-width: 768px) {
-  .dog-profile {
-      max-width: 100%;
-  }
+/* Start Chat button */
+.start-chat-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.start-chat-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 15px rgba(76, 175, 80, 0.5);
+}
+
+/* Unmatch button */
+.unmatch-btn {
+  background-color: #e53935;
+  color: white;
+}
+
+.unmatch-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 15px rgba(229, 57, 53, 0.5);
+}
+
+/* Error message styling */
+.error-message {
+  color: red;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 20px;
 }

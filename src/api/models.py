@@ -33,20 +33,6 @@ class DogProfile(db.Model):
 
 
 
-class Profile(db.Model):
-     id = db.Column(db.Integer, primary_key=True)
-     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-     username = db.Column(db.String(80), unique=True, nullable=False)
-     bio = db.Column(db.String(200))
-     age = db.Column(db.Integer)
-     breed=db.Column(db.String(200))
-     city=db.Column(db.String(200))
-     state=db.Column(db.String(200))
-     temperment=db.Column(db.String(200))
-     looking_for=db.Column(db.String(200))
-     photos = db.Column(db.String(500)) #photos stored as URL potentially
-
-
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # User who liked the dog
