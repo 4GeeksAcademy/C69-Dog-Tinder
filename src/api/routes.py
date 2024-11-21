@@ -3,7 +3,7 @@ from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity
 )
 from flask_cors import CORS  # Importing CORS
-from .models import db, User, Profile, DogProfile, Like, Message, Settings
+from .models import db, User,  DogProfile, Like, Message, Settings
 import requests
 import math
 import os
@@ -119,21 +119,6 @@ def get_user_settings(user_id):
     }), 200
 
 
-@api.route('/users/<int:user_id>/profile', methods=['PUT'])
-@jwt_required()
-def update_user_profile(user_id):
-    data = request.get_json()
-    profile = Profile.query.filter_by(user_id=user_id).first()
-    profile.bio = data.get('bio', profile.bio)
-    profile.age = data.get('age', profile.age)
-    profile.breed=data.get('breed', profile.breed)
-    profile.city=data.get('city', profile.city)
-    profile.state=data.get('state', profile.state)
-    profile.temperment=data.get('temperment', profile.temperment)
-    profile.looking_for=data.get('looking_for', profile.looking_for)
-    profile.photos = ','.join(data.get('photos', []))  # This assumes URLS might need change later
-    db.session.commit()
-    return jsonify({"message": "Profile updated successfully"}), 200
 
 
 @api.route('/users/<int:user_id>/settings', methods=['PUT'])
