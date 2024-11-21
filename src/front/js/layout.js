@@ -8,7 +8,7 @@ import ChatPage from "./pages/chatPage";
 import injectContext, { Context } from "./store/appContext";
 import Navbar from "./component/navbar";
 import { Footer } from "./component/footer";
-import { UserCreation } from './pages/UserCreation';
+import { SignUp } from './pages/SignUp';
 import DogProfileCreation from './pages/DogProfileCreation';
 import { Login } from './pages/Login';
 import DogProfile from "./component/DogProfile";
@@ -53,7 +53,7 @@ const Layout = () => {
                     <Route path="/single/:theid" element={<Single />} />
                     <Route path="/chatPage/:id" element={userId ? <ChatPage /> : <Navigate to="/login" />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<UserCreation />} />
+                    <Route path="/signup" element={<SignUp />} />
                     <Route path="/dog-profile-creation" element={<DogProfileCreation />} />
                     
                     {/* Usa datos dinámicos para DogProfile */}
