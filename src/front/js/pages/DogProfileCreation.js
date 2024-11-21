@@ -8,7 +8,9 @@ export function DogProfileCreation() {
         age: '',
         breed: '',
         bio: '',
-        photos: ''
+        photos: '',
+        city: '',  // Added city field
+        state: ''  // Added state field
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -21,8 +23,8 @@ export function DogProfileCreation() {
 
     // Validate form fields
     const validateForm = () => {
-        const { dog_name, age, breed, bio, photos } = formData;
-        if (!dog_name || !age || !breed || !bio || !photos) {
+        const { dog_name, age, breed, bio, photos, city, state } = formData;
+        if (!dog_name || !age || !breed || !bio || !photos || !city || !state) {
             setError('All fields are required.');
             return false;
         }
@@ -58,7 +60,7 @@ export function DogProfileCreation() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // if (!validateForm()) return; // Stop submission if validation fails
+        if (!validateForm()) return; // Stop submission if validation fails
 
         setIsLoading(true);
         setError(null);
@@ -70,7 +72,9 @@ export function DogProfileCreation() {
             age: JSON.parse(formData.age),
             breed: formData.breed,
             bio: formData.bio,
-            photos: formData.photos.split(',').map((url) => url.trim()) // Clean URLs
+            photos: formData.photos.split(',').map((url) => url.trim()), // Clean URLs
+            city: formData.city,  // Add city to requestData
+            state: formData.state  // Add state to requestData
         };
 
         const response = await fetch(`${process.env.BACKEND_URL}/api/users/dog-profile`, {
@@ -93,13 +97,6 @@ export function DogProfileCreation() {
             setError(errorMsg.message || 'Dog profile creation failed');
         }
         setIsLoading(false);
-        // try {
-            
-        // } catch (error) {
-        //     setError('An error occurred while processing your request.');
-        //     console.log(requestData);
-        // } finally {
-        // }
     };
 
     return (
@@ -156,6 +153,29 @@ export function DogProfileCreation() {
                         onChange={handleChange}
                     />
                 </div>
+
+                {/* New fields for city and state */}
+                <div className="input-box">
+                    <input
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="input-box">
+                    <input
+                        type="text"
+                        name="state"
+                        placeholder="State"
+                        value={formData.state}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
                 <div className="input-box">
                     <input
                         type="submit"
