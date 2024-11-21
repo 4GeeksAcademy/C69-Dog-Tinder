@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";  // Import Link from react-router-dom for navigation
 
 const Playdates = () => {
   const [matches, setMatches] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);  // Track loading state
-
- // Assume the user ID is available (could be from auth state or local storage)
 
   useEffect(() => {
     // Fetch the user's matches
@@ -36,10 +35,9 @@ const Playdates = () => {
     fetchMatches();
   }, []);
 
-  // Handle unmatch
   const handleUnmatch = async (dogId) => {
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/unmatch/${dogId}`, {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/users/currentUser/unmatch/${dogId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -62,12 +60,12 @@ const Playdates = () => {
 
   // Navigate to the match's profile
   const viewProfile = (dogId) => {
-    window.location.href = `/dog-profile/${dogId}`;
+    window.location.href = `/dog-profile/${dogId}`; // Direct navigation to the dog's profile
   };
 
-  // Navigate to chat page
+  // Navigate to the chat page with the dog owner (partner)
   const startChat = (dogOwnerId) => {
-    window.location.href = `/messages/${userId}/${dogOwnerId}`;
+    window.location.href = `/chat/${dogOwnerId}`; // Direct navigation to the chat page
   };
 
   if (loading) return <div>Loading...</div>;  // Show loading message
@@ -94,19 +92,19 @@ const Playdates = () => {
                 <div className="match-actions">
                   <button
                     className="view-profile-btn"
-                    onClick={() => viewProfile(match.dog_id)}
+                    onClick={() => viewProfile(match.dog_id)}  // View profile button
                   >
                     View Profile
                   </button>
                   <button
                     className="start-chat-btn"
-                    onClick={() => startChat(match.dog_owner_id)}
+                    onClick={() => startChat(match.dog_id)} // Chat button
                   >
                     Chat
                   </button>
                   <button
                     className="unmatch-btn"
-                    onClick={() => handleUnmatch(match.dog_id)}
+                    onClick={() => handleUnmatch(match.dog_id)} // Unmatch button
                   >
                     Unmatch
                   </button>

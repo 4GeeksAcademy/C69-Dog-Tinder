@@ -200,9 +200,11 @@ def get_matches():
     return jsonify(matches), 200
 
 
-@api.route('/users/<int:user_id>/unmatch/<int:dog_id>', methods=['DELETE'])
+@api.route('/users/currentUser/unmatch/<int:dog_id>', methods=['DELETE'])
 @jwt_required()
-def unmatch(user_id, dog_id):
+def unmatch(dog_id):
+    user_id=get_jwt_identity()
+    
     like = Like.query.filter_by(user_id=user_id, target_dog_id=dog_id).first()
     if like:
         db.session.delete(like)
@@ -211,24 +213,65 @@ def unmatch(user_id, dog_id):
     return jsonify({"message": "Match not found"}), 404
 
 
-@api.route('/messages', methods=['POST'])
+@api.route('/messages/send', methods=['POST'])
 @jwt_required()
 def send_message():
+    # Get the current user's ID from the JWT token
+    from_user_id = get_jwt_identity()
+    
+    # Get the data from the request
     data = request.get_json()
-    new_message = Message(from_user_id=data['fromUserId'], to_user_id=data['toUserId'], content=data['content'])
-    db.session.add(new_message)
-    db.session.commit()
-    return jsonify({"message": "Message sent successfully"}), 200
+    to_user_id = data.get('to_user_id')
+    content = data.get('content')
+
+    if not to_user_id or not content:
+        return jsonify({"msg": "Missing required fields: to_user_id and content"}), 400
+    
+    # Create a new message
+    message = Message(
+        from_user_id=from_user_id,
+        to_user_id=to_user_id,
+        content=content
+    )
+
+    try:
+        # Save the message to the database
+        db.session.add(message)
+        db.session.commit()
+        return jsonify({"msg": "Message sent successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "Error sending message", "error": str(e)}), 500
 
 
-@api.route('/messages/<int:user_id>/<int:partner_user_id>', methods=['GET'])
+@api.route('/messages/<int:partner_user_id>', methods=['GET'])
 @jwt_required()
-def get_messages(user_id, partner_user_id):
+def get_messages(partner_user_id):
+    # Get the current user's ID from the JWT token
+    user_id = get_jwt_identity()
+
+    # Fetch all messages where the current user is involved with the given partner_user_id
     messages = Message.query.filter(
-        (Message.from_user_id == user_id) & (Message.to_user_id == partner_user_id) |
-        (Message.from_user_id == partner_user_id) & (Message.to_user_id == user_id)
-    ).all()
-    return jsonify([{"from": msg.from_user_id, "content": msg.content, "timestamp": msg.timestamp} for msg in messages]), 200
+        ((Message.from_user_id == user_id) & (Message.to_user_id == partner_user_id)) |
+        ((Message.to_user_id == user_id) & (Message.from_user_id == partner_user_id))
+    ).order_by(Message.timestamp.desc()).all()
+
+    # Prepare the response data
+    messages_data = [
+        {
+            "id": msg.id,
+            "from_user_id": msg.from_user_id,
+            "to_user_id": msg.to_user_id,
+            "content": msg.content,
+            "timestamp": msg.timestamp.isoformat()
+        }
+        for msg in messages
+    ]
+
+    if not messages_data:
+        return jsonify({"messages": []}), 200  
+
+    return jsonify({"messages": messages_data}), 200
 
 def get_geo_location(city, state):
     api_key = os.environ.get('Geolocation_api_key')
