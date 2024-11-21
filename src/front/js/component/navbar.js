@@ -15,10 +15,12 @@ const Navbar = () => {
           <FaHeart className="navbar-icon" />
           <span>Playdates</span>
         </Link>
+        {/*
         <Link to="/chatPage" className="nav-item">
           <FaComment className="navbar-icon" />
           <span>Chats</span>
-        </Link>
+        </Link>*/}
+        
         <Link to="/my-profile" className="nav-item">
           <FaUser className="navbar-icon" />
           <span>My Dog's Profile</span>

@@ -51,7 +51,7 @@ const Layout = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/demo" element={<Demo />} />
                     <Route path="/single/:theid" element={<Single />} />
-                    <Route path="/chatPage/:id" element={userId ? <ChatPage /> : <Navigate to="/login" />} />
+                    <Route path="/chat/:partnerUserId" element={ <ChatPage /> } />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/dog-profile-creation" element={<DogProfileCreation />} />
