@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/DogProfileCreation.css';
 
 export function DogProfileCreation() {
     const [formData, setFormData] = useState({
