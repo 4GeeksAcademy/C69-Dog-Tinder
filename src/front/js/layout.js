@@ -57,14 +57,15 @@ const Layout = () => {
                     <Route path="/dog-profile-creation" element={<DogProfileCreation />} />
                     
                     {/* Usa datos dinámicos para DogProfile */}
+
                     <Route 
-                        path="/dog-profile/:id" 
-                        element={
-                            userId && dogProfile 
-                                ? <DogProfile dog={dogProfile} onLike={handleLike} onDiscard={handleDiscard} onViewProfile={handleViewProfile} /> 
-                                : <Navigate to="/login" />
-                        } 
-                    />
+    path="/dog-profile/:id" 
+    element={
+        userId && dogProfile?.id
+            ? <DogProfile dog={dogProfile} onLike={handleLike} onDiscard={handleDiscard} onViewProfile={handleViewProfile} /> 
+            : <Navigate to="/login" />
+    } 
+/>
                     
                     <Route path="/swipe" element={userId ? <DogSwipePage /> : <Navigate to="/login" />} />
                     <Route path="/settings" element={userId ? <SettingsPage /> : <Navigate to="/login" />} />
