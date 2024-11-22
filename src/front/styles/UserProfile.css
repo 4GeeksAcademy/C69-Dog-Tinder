@@ -4,83 +4,91 @@
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    height: 100vh; /* Full viewport height */
+    height: 90vh; /* Full viewport height */
     background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff); /* Match home page gradient */
     animation: fadeIn 1s ease-in-out; /* Smooth fade-in */
     overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
-/* User info header */
-.user-info {
-    text-align: center;
-    margin-bottom: 20px;
+/* Main header section with photo and name */
+.main-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.user-info h1 {
-    font-size: 2.5rem;
+.main-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dog-name {
+    font-size: 1.8rem;
     color: #333;
-    margin-bottom: 10px;
+    margin: 10px 0;
     text-transform: uppercase;
     letter-spacing: 2px;
+    text-align: center;
 }
 
-.user-info .edit-button {
-    background: linear-gradient(135deg, #333, #154a83);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.dog-name-input {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.user-info .edit-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+/* Compact button placement */
+.button-container {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-/* Dog profile section */
-.dog-profile {
+/* Dog info in a compact layout */
+.dog-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     width: 90%;
     max-width: 600px;
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
 }
 
-.dog-profile h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 15px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+.dog-info .info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 2px;
 }
 
-/* Label styling */
 .dog-info label {
+    justify-content: space-between;
     font-weight: bold;
     font-size: 1rem;
     color: #154a83;
-    display: block;
-    margin-bottom: 5px;
+    flex: 1;
 }
 
-/* Text content and inputs */
-.dog-info p {
-    font-size: 1rem;
-    color: #4b3f3f;
-    margin-bottom: 15px;
+.dog-info p,
+.dog-info input,
+.dog-info textarea {
+    flex: 2;
+    margin-left: 10px;
 }
 
 .dog-info input,
 .dog-info textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 5px;
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -88,17 +96,23 @@
 }
 
 .dog-info textarea {
-    height: 80px; /* Larger input for bio */
-    resize: none; /* Prevent resizing */
+    height: 60px;
+    resize: none;
 }
 
 /* Dog photo gallery */
 .dog-photos {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    position: relative; /* Ensure proper layout stacking */
+}
+
+.dog-photos h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
 }
 
 .dog-photos img {
@@ -107,6 +121,64 @@
     border-radius: 10px;
     object-fit: cover;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 5px;
+    display: inline-block;
+}
+
+.dog-photos textarea {
+    width: 100%; /* Occupy full container width */
+    height: 120px; /* More space for multiple URLs */
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 10px;
+    resize: vertical; /* Allow vertical resizing */
+}
+
+/* Increase container size when editing */
+.dog-photos.editing {
+    padding: 15px;
+    background-color: rgba(240, 248, 255, 0.9); /* Light background for editing */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: left; /* Align text to the left */
+}
+
+/* Adjust textarea inside the editing container */
+.dog-photos.editing textarea {
+    height: 150px; /* Expand textarea height */
+    margin-bottom: 10px; /* Add spacing below */
+}
+
+.dog-photos.editing .help-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dog-info .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dog-info label {
+        margin-bottom: 3px;
+    }
+
+    .dog-info p,
+    .dog-info input,
+    .dog-info textarea {
+        margin-left: 0;
+    }
+
+    .dog-photos img {
+        width: 60px;
+        height: 60px;
+    }
 }
 
 /* Save button styling */
@@ -127,6 +199,24 @@
     box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Edit button styling */
+.edit-button {
+    background: linear-gradient(135deg, #333, #154a83);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 10px;
+}
+
+.edit-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .dog-profile {
@@ -140,7 +230,7 @@
     }
 
     .save-button,
-    .user-info .edit-button {
+    .edit-button {
         padding: 8px 16px;
         font-size: 0.9rem;
     }

@@ -61,86 +61,94 @@ const UserProfile = () => {
 
     return (
         <div className="user-profile-container">
-            <div className="user-info">
-                <h1>Welcome, {store.userProfile?.email || 'User'}</h1>
-                <button className="edit-button" onClick={handleEditToggle}>
-                    {isEditing ? 'Cancel' : 'Edit Profile'}
-                </button>
-            </div>
+            <div className="main-header">
+    {store.dogProfile.photos.length > 0 && (
+        <img
+            className="main-photo"
+            src={store.dogProfile.photos[0]}
+            alt={`${store.dogProfile.dog_name} main photo`}
+        />
+    )}
+    {isEditing ? (
+        <input
+            type="text"
+            value={editProfile?.dog_name || ''}
+            className="dog-name-input"
+            onChange={(e) => setEditProfile({ ...editProfile, dog_name: e.target.value })}
+        />
+    ) : (
+        <h1 className="dog-name">{store.dogProfile.dog_name}</h1>
+    )}
+    <div className="button-container">
+        {isEditing && (
+            <button className="save-button" onClick={handleSave}>
+                Save Changes
+            </button>
+        )}
+        <button className="edit-button" onClick={handleEditToggle}>
+            {isEditing ? 'Cancel' : 'Edit Profile'}
+        </button>
+    </div>
+</div>
 
-            <div className="dog-profile">
-                <h2>Your Dog's Profile</h2>
-                <div className="dog-info">
-                    <label>Dog Name:</label>
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            value={editProfile?.dog_name || ''}
-                            onChange={(e) => setEditProfile({ ...editProfile, dog_name: e.target.value })}
-                        />
-                    ) : (
-                        <p>{store.dogProfile.dog_name}</p>
-                    )}
+<div className="dog-info">
+    <div className="info-row">
+        <label>Age:</label>
+        {isEditing ? (
+            <input
+                type="number"
+                value={editProfile?.age || ''}
+                onChange={(e) => setEditProfile({ ...editProfile, age: e.target.value })}
+            />
+        ) : (
+            <p>{store.dogProfile.age} years</p>
+        )}
+    </div>
+    <div className="info-row">
+        <label>Breed:</label>
+        {isEditing ? (
+            <input
+                type="text"
+                value={editProfile?.breed || ''}
+                onChange={(e) => setEditProfile({ ...editProfile, breed: e.target.value })}
+            />
+        ) : (
+            <p>{store.dogProfile.breed}</p>
+        )}
+    </div>
+    <div className="info-row">
+        <label>Bio:</label>
+        {isEditing ? (
+            <textarea
+                value={editProfile?.bio || ''}
+                onChange={(e) => setEditProfile({ ...editProfile, bio: e.target.value })}
+            />
+        ) : (
+            <p>{store.dogProfile.bio}</p>
+        )}
+    </div>
+</div>
 
-                    <label>Age:</label>
-                    {isEditing ? (
-                        <input
-                            type="number"
-                            value={editProfile?.age || ''}
-                            onChange={(e) => setEditProfile({ ...editProfile, age: e.target.value })}
-                        />
-                    ) : (
-                        <p>{store.dogProfile.age} years</p>
-                    )}
+<div className="dog-photos">
+    <h3>My Photos</h3>
+    {isEditing ? (
+        <textarea
+            value={editProfile?.photos.slice(1).join(', ') || ''}
+            onChange={(e) =>
+                setEditProfile({
+                    ...editProfile,
+                    photos: [store.dogProfile.photos[0], ...e.target.value.split(',').map((url) => url.trim())],
+                })
+            }
+        />
+    ) : (
+        store.dogProfile.photos.slice(1).map((photo, index) => (
+            <img key={index} src={photo} alt={`Photo ${index + 1}`} />
+        ))
+    )}
+</div>
 
-                    <label>Breed:</label>
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            value={editProfile?.breed || ''}
-                            onChange={(e) => setEditProfile({ ...editProfile, breed: e.target.value })}
-                        />
-                    ) : (
-                        <p>{store.dogProfile.breed}</p>
-                    )}
-
-                    <label>Bio:</label>
-                    {isEditing ? (
-                        <textarea
-                            value={editProfile?.bio || ''}
-                            onChange={(e) => setEditProfile({ ...editProfile, bio: e.target.value })}
-                        />
-                    ) : (
-                        <p>{store.dogProfile.bio}</p>
-                    )}
-
-                    <label>Photos:</label>
-                    {isEditing ? (
-                        <textarea
-                            value={editProfile?.photos?.join(', ') || ''}
-                            onChange={(e) =>
-                                setEditProfile({
-                                    ...editProfile,
-                                    photos: e.target.value.split(',').map((url) => url.trim()),
-                                })
-                            }
-                        />
-                    ) : (
-                        <div className="dog-photos">
-                            {store.dogProfile.photos.map((photo, index) => (
-                                <img key={index} src={photo} alt={`${store.dogProfile.dog_name} photo`} />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {isEditing && (
-                <button className="save-button" onClick={handleSave}>
-                    Save Changes
-                </button>
-            )}
-        </div>
+ </div>
     );
 };
 
