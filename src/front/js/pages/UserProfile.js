@@ -10,67 +10,65 @@ const UserProfile = () => {
     const [error, setError] = useState(null); // Maneja errores
     const navigate = useNavigate();
     
-    const token = localStorage.getItem("token")
-    console.log(token,"token number")
-    if (token==null){navigate("/login")}
+    const token = localStorage.getItem("token");
+console.log(token, "token number");
+if (token == null) {
+    navigate("/login");
+}
 
-    const token = localStorage.getItem("token")
-    console.log(token,"token number")
-    if (token==null){navigate("/login")}
-
-    useEffect(() => {
-        // Fetch the user's dog profile only if it's not already available
-        if (!store.dogProfile) {
-            actions.fetchMyDogProfile()
-                .then(() => {
-                    if (store.dogProfile) {
-                        setEditProfile({ ...store.dogProfile });
-                    }
-                })
-                .catch((err) => {
-                    console.error(err);
-                    setError("Failed to load your dog's profile. Please try again later.");
-                });
-        } else {
-            setEditProfile({ ...store.dogProfile });
-        }
-    }, [actions, store.dogProfile]);
-
-    const handleEditToggle = () => {
-        if (!isEditing) {
-            setEditProfile({ ...store.dogProfile }); // Copy data when editing starts
-        }
-        setIsEditing(!isEditing);
-    };
-
-    const handleSave = async () => {
-        try {
-            // Simple validation before submitting the profile
-            if (!editProfile.dog_name || !editProfile.age || !editProfile.breed) {
-                setError("Please fill in all the required fields.");
-                return;
-            }
-
-            await actions.updateDogProfile(editProfile); // Send updated data to the backend
-            setIsEditing(false); // Exit editing mode
-        } catch (error) {
-            console.error('Error saving profile:', error);
-            setError('Failed to save changes. Please try again.');
-        }
-    };
-
-    if (error) {
-        return <p>{error}</p>;
+useEffect(() => {
+    // Fetch the user's dog profile only if it's not already available
+    if (!store.dogProfile) {
+        actions.fetchMyDogProfile()
+            .then(() => {
+                if (store.dogProfile) {
+                    setEditProfile({ ...store.dogProfile });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                setError("Failed to load your dog's profile. Please try again later.");
+            });
+    } else {
+        setEditProfile({ ...store.dogProfile });
     }
+}, [actions, store.dogProfile]);
 
-    if (!editProfile) {
-        return <p>Loading your dog's profile...</p>;
+const handleEditToggle = () => {
+    if (!isEditing) {
+        setEditProfile({ ...store.dogProfile }); // Copy data when editing starts
     }
-   
-    return (
-        <div className="user-profile-container">
+    setIsEditing(!isEditing);
+};
 
-            <div className="main-header">
+const handleSave = async () => {
+    try {
+        // Simple validation before submitting the profile
+        if (!editProfile.dog_name || !editProfile.age || !editProfile.breed) {
+            setError("Please fill in all the required fields.");
+            return;
+        }
+
+        await actions.updateDogProfile(editProfile); // Send updated data to the backend
+        setIsEditing(false); // Exit editing mode
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        setError('Failed to save changes. Please try again.');
+    }
+};
+
+if (error) {
+    return <p>{error}</p>;
+}
+
+if (!editProfile) {
+    return <p>Loading your dog's profile...</p>;
+}
+
+return (
+    <div className="user-profile-container">
+
+<div className="main-header">
     {store.dogProfile.photos.length > 0 && (
         <img
             className="main-photo"
@@ -99,7 +97,6 @@ const UserProfile = () => {
         </button>
     </div>
 </div>
-
 
 <div className="dog-info">
     <div className="info-row">
@@ -139,27 +136,30 @@ const UserProfile = () => {
     </div>
 </div>
 
-<div className="dog-photos">
+<div className={`dog-photos ${isEditing ? "editing" : ""}`}>
     <h3>My Photos</h3>
     {isEditing ? (
-        <textarea
-            value={editProfile?.photos.slice(1).join(', ') || ''}
-            onChange={(e) =>
-                setEditProfile({
-                    ...editProfile,
-                    photos: [store.dogProfile.photos[0], ...e.target.value.split(',').map((url) => url.trim())],
-                })
-            }
-        />
+        <>
+            <textarea
+                value={editProfile?.photos.slice(1).join(', ') || ''}
+                onChange={(e) =>
+                    setEditProfile({
+                        ...editProfile,
+                        photos: [store.dogProfile.photos[0], ...e.target.value.split(',').map((url) => url.trim())],
+                    })
+                }
+                placeholder="Enter photo URLs separated by commas"
+            />
+            <p className="help-text">Add URLs separated by commas. The first photo is your main photo.</p>
+        </>
     ) : (
         store.dogProfile.photos.slice(1).map((photo, index) => (
             <img key={index} src={photo} alt={`Photo ${index + 1}`} />
         ))
     )}
 </div>
-
- </div>
-    );
+</div>
+);
 };
 
 export default UserProfile;

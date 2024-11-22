@@ -129,7 +129,7 @@ def update_dog_profile():
     if not dog_profile:
         return jsonify({"message": "No dog profile found"}), 404
 
-    # Actualiza los datos del perfil
+    # Update Profile info
     dog_profile.dog_name = data.get('dog_name', dog_profile.dog_name)
     dog_profile.age = data.get('age', dog_profile.age)
     dog_profile.breed = data.get('breed', dog_profile.breed)

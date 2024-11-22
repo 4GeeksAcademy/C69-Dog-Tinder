@@ -89,29 +89,64 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           
              // Function to fetch the dog's profile
-             fetchMyDogProfile: async () => {
-                const store = getStore(); // Asegúrate de obtener el estado global
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/users/dog-profile`, {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`, // Usamos el token almacenado en el estado global
-                        },
-                    });
-                    console.log(store.JWT_Token, "fetchDOGtoken")
-                    if (!response.ok) {
-                        const errorDetails = await response.json();
-                        console.error('Server error response:', errorDetails);
-                        throw new Error(`Failed to fetch your dog's profile: ${errorDetails.message}`);
-                    }
-            
-                    const data = await response.json();
-                    setStore({ dogProfile: data }); // Guarda el perfil del perro en el estado global
-                    console.log('Dog profile fetched successfully:', data);
-                } catch (error) {
-                    console.error('Error fetching your dog profile:', error);
-                }
+fetchMyDogProfile: async () => {
+    const store = getStore(); // Access global state
+    try {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/users/dog-profile`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${store.JWT_Token}`, // Use the correct token
             },
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            console.error('Server error response:', errorDetails);
+            throw new Error(`Failed to fetch your dog's profile: ${errorDetails.message}`);
+        }
+
+        const data = await response.json();
+        setStore({ dogProfile: data }); // Store the dog's profile in global state
+        console.log('Dog profile fetched successfully:', data);
+    } catch (error) {
+        console.error('Error fetching your dog profile:', error);
+    }
+},
+
+// Function to update dog's profile
+updateDogProfile: async (updatedProfile) => {
+    const store = getStore();
+
+    // Validate before sending
+    if (!updatedProfile.dog_name || !updatedProfile.age || !updatedProfile.breed) {
+        console.error('Validation Error: Missing required fields');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/users/dog-profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${store.JWT_Token}`, // Use the correct token
+            },
+            body: JSON.stringify(updatedProfile),
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            console.error('Server error response:', errorDetails);
+            throw new Error(`Failed to update dog profile: ${errorDetails.message}`);
+        }
+
+        const data = await response.json();
+        setStore({ dogProfile: data });
+        console.log('Dog profile updated successfully:', data);
+    } catch (error) {
+        console.error('Error updating dog profile:', error);
+    }
+},
+
             
             
             //Function to update info 
