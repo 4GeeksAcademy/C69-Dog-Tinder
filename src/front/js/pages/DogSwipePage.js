@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DogProfile from '../component/DogProfile';
+import { useNavigate } from 'react-router-dom';
 
 const DogSwipePage = () => {
   const [dogs, setDogs] = useState([]);  // List of all available dogs
@@ -8,7 +9,10 @@ const DogSwipePage = () => {
   const [error, setError] = useState(null);
   const [userSettings, setUserSettings] = useState(null);
   const [userDog, setUserDog] = useState(null);
+  const token = localStorage.getItem("token")
+  const navigate = useNavigate();
 
+  if (token==null){navigate("/login")}
   useEffect(() => {
     const fetchUserSettingsAndDogProfile = async () => {
       try {
@@ -189,7 +193,7 @@ const DogSwipePage = () => {
   }
 
   const currentDog = dogs[currentDogIndex];
-
+  
   return (
     <div className="dog-swipe-page">
       <DogProfile

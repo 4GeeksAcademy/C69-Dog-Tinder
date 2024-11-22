@@ -9,6 +9,10 @@ const UserProfile = () => {
     const [editProfile, setEditProfile] = useState(null); 
     const [error, setError] = useState(null); // Maneja errores
     const navigate = useNavigate();
+    
+    const token = localStorage.getItem("token")
+    console.log(token,"token number")
+    if (token==null){navigate("/login")}
 
     useEffect(() => {
         // Fetch the user's dog profile only if it's not already available
@@ -58,11 +62,12 @@ const UserProfile = () => {
     if (!editProfile) {
         return <p>Loading your dog's profile...</p>;
     }
-
+   
     return (
         <div className="user-profile-container">
             <div className="user-info">
-                <h1>Welcome, {store.userProfile?.email || 'User'}</h1>
+               
+                { <h1>Welcome, {store.userProfile?.email || 'User'}</h1> }
                 <button className="edit-button" onClick={handleEditToggle}>
                     {isEditing ? 'Cancel' : 'Edit Profile'}
                 </button>
