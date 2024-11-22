@@ -11,41 +11,51 @@ const UserProfile = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        actions.fetchMyDogProfile()
-            .then(() => {
-                if (store.dogProfile) {
-                    setEditProfile({ ...store.dogProfile });
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                setError("Failed to load your dog's profile. Please try again later.");
-            });
+        // Fetch the user's dog profile only if it's not already available
+        if (!store.dogProfile) {
+            actions.fetchMyDogProfile()
+                .then(() => {
+                    if (store.dogProfile) {
+                        setEditProfile({ ...store.dogProfile });
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    setError("Failed to load your dog's profile. Please try again later.");
+                });
+        } else {
+            setEditProfile({ ...store.dogProfile });
+        }
     }, [actions, store.dogProfile]);
 
     const handleEditToggle = () => {
         if (!isEditing) {
-            setEditProfile({ ...store.dogProfile }); // Copiar datos al activar edición
+            setEditProfile({ ...store.dogProfile }); // Copy data when editing starts
         }
         setIsEditing(!isEditing);
     };
 
     const handleSave = async () => {
         try {
-            await actions.updateDogProfile(editProfile); // Enviar datos actualizados al backend
-            setIsEditing(false); // Salir del modo de edición
+            // Simple validation before submitting the profile
+            if (!editProfile.dog_name || !editProfile.age || !editProfile.breed) {
+                setError("Please fill in all the required fields.");
+                return;
+            }
+
+            await actions.updateDogProfile(editProfile); // Send updated data to the backend
+            setIsEditing(false); // Exit editing mode
         } catch (error) {
             console.error('Error saving profile:', error);
             setError('Failed to save changes. Please try again.');
         }
     };
 
-    // Asegúrate de que el estado `editProfile` está listo antes de renderizar
     if (error) {
         return <p>{error}</p>;
     }
 
-    if (!store.dogProfile) {
+    if (!editProfile) {
         return <p>Loading your dog's profile...</p>;
     }
 
