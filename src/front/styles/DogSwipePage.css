@@ -1,138 +1,141 @@
-/* Container styling for the swipe page */
+/* Main container for DogSwipePage */
 .dog-swipe-page {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    height: 100vh; /* Full viewport height */
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff);
     padding: 20px;
-    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff); /* Gradient background */
-    animation: fadeIn 1s ease-in-out; /* Smooth fade-in animation */
-    overflow: hidden; /* Prevent unwanted scrolling */
-}
-
-/* DogProfile card styling */
-.dog-profile-card {
+    gap: 20px;
+  }
+  
+  /* Dog profile card */
+  .dog-profile-card {
+    width: 400px;
+    border-radius: 15px;
+    box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    width: 90%;
-    max-width: 400px;
-    background: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    animation: slideIn 0.8s ease-in-out;
-    position: relative; /* Enable proper stacking for buttons */
-}
-
-/* Dog photo styling */
-.dog-photo {
-    width: 100%;
-    height: 250px;
-    border-radius: 15px;
-    object-fit: cover;
-    margin-bottom: 20px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Dog name and info */
-.dog-info {
     text-align: center;
-    font-size: 1.5rem;
+    backdrop-filter: blur(10px); /* Modern blur effect */
+    border: 1px solid rgba(180, 188, 223, 0.5);
+  }
+  
+  .dog-profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Dog image */
+  .dog-profile-image {
+    width: 100%;
+    height: 300px;
+    object-fit: contain; /* Maintains aspect ratio */
+    border-bottom: 2px solid rgba(21, 74, 131, 0.5);
+  }
+  
+  /* Dog details */
+  .dog-profile-details {
+    padding: 20px;
+    width: 100%;
+  }
+  
+  .dog-profile-details h3 {
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #154a83;
+    color: #154a83; /* Dark blue */
     margin-bottom: 10px;
-}
-
-.dog-details {
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dog-profile-details p {
     font-size: 1rem;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-/* Swipe buttons container */
-.swipe-buttons {
+    color: #555;
+    margin: 5px 0;
+    line-height: 1.5;
+  }
+  
+  .dog-location {
+    font-size: 1rem;
+    color: #333;
+    margin-top: 10px;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Actions container */
+  .dog-actions {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    width: 100%;
-}
-
-/* Button styling */
-.swipe-button {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+  }
+  
+  /* Buttons */
+  .dog-actions button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Discard button */
+  .discard-btn {
+    background-color: #c4312f; /* Red */
+    color: white;
+  }
+  
+  .discard-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(229, 57, 53, 0.5);
+  }
+  
+  /* Like button */
+  .like-btn {
+    background-color: #4caf50; /* Green */
+    color: white;
+  }
+  
+  .like-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(76, 175, 80, 0.5);
+  }
+  
+  /* View Profile button */
+  .view-profile-btn {
+    background-color: #154a83; /* Blue */
+    color: white;
+  }
+  
+  .view-profile-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(21, 74, 131, 0.5);
+  }
+  
+  /* Error message */
+  .error-message {
+    font-size: 1.2rem;
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  /* Placeholder image style (optional) */
+  .placeholder-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    background-color: rgba(200, 200, 200, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.5rem;
-    color: #154a83;
-    border: none;
-}
-
-.swipe-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Discard button */
-.swipe-button.discard {
-    background-color: #ffcccc;
-    color: #ff4d4d;
-}
-
-/* Like button */
-.swipe-button.like {
-    background-color: #ccffe6;
-    color: #33cc66;
-}
-
-/* Middle button for profile details */
-.swipe-button.details {
-    background-color: #f0f8ff;
-    color: #154a83;
-}
-
-/* Keyframes for animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .dog-profile-card {
-        width: 100%;
-        padding: 15px;
-    }
-
-    .dog-photo {
-        height: 200px;
-    }
-
-    .swipe-button {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-    }
-}
+    color: #555;
+  }
+  

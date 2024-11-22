@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DogProfile from '../component/DogProfile';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/DogSwipePage.css';
+
 
 const DogSwipePage = () => {
   const [dogs, setDogs] = useState([]);  // List of all available dogs
@@ -161,27 +163,29 @@ const DogSwipePage = () => {
   };
 
   const handleLike = async (id) => {
-    console.log(`Liked dog with id: ${id}`);
-
-    const response = await fetch(`${process.env.BACKEND_URL}/api/swipe/right`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({ targetDogId: id }),
-    });
-
-    if (response.ok) {
-      console.log('Dog liked successfully');
-      setCurrentDogIndex((prevIndex) => prevIndex + 1);
-    } else {
-      console.error('Failed to like dog');
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/swipe/right`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ targetDogId: id }),
+      });
+  
+      if (response.ok) {
+        console.log(`Liked dog: ${dogs[currentDogIndex].name}`);
+        setCurrentDogIndex((prevIndex) => prevIndex + 1);
+      } else {
+        console.error('Failed to like dog');
+      }
+    } catch (error) {
+      console.error('Error liking dog:', error);
     }
   };
 
   const handleDiscard = () => {
-    console.log('Discarded current dog');
+    console.log(`Discarded dog: ${dogs[currentDogIndex].name}`);
     setCurrentDogIndex((prevIndex) => prevIndex + 1);
   };
 
@@ -193,16 +197,35 @@ const DogSwipePage = () => {
   }
 
   const currentDog = dogs[currentDogIndex];
-  
+  console.log("Current Dog:", currentDog);
+
   return (
     <div className="dog-swipe-page">
-      <DogProfile
-        key={currentDog.id}
-        dog={currentDog}
-        onLike={() => handleLike(currentDog.id)}  
-        onDiscard={handleDiscard}  
+  {currentDog.photos && currentDog.photos.length > 0 ? (
+    <div className="dog-profile-card">
+      <img
+        src={currentDog.photos[0]} // Mostrar la primera imagen del arreglo
+        alt={currentDog.dog_name} // Cambiar a currentDog.dog_name
+        className="dog-profile-image"
+        onError={(e) => (e.target.src = "/placeholder-image.jpg")} // Imagen de respaldo
       />
+      <div className="dog-profile-details">
+        <h3 className="dog-name">{currentDog.dog_name}</h3> {/* Cambiado a dog_name */}
+        <p>Age: {currentDog.age}</p>
+        <p>Breed: {currentDog.breed}</p>
+        <p className="dog-location">📍 {currentDog.city}, {currentDog.state}</p>
+      </div>
+      <div className="dog-actions">
+        <button className="discard-btn" onClick={handleDiscard}>❌ Discard</button>
+        <button className="like-btn" onClick={() => handleLike(currentDog.id)}>❤️ Like</button>
+        <button className="view-profile-btn">👁️ View Profile</button>
+      </div>
     </div>
+  ) : (
+    <p className="error-message">Image not available for {currentDog.dog_name}</p>
+  )}
+</div>
+
   );
 };
 
