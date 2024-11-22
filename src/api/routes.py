@@ -80,12 +80,27 @@ def login():
     else:
         return jsonify({"message": "Invalid email or password"}), 401
 
+@api.route('/dogs/<int:dog_id>', methods=['GET'])
+def get_dog_profile(dog_id):
+    dog = DogProfile.query.get(dog_id)
+    if dog:
+        return jsonify({
+            'id': dog.id,
+            'dog_name': dog.dog_name,
+            'breed': dog.breed,
+            'age': dog.age,
+            'bio': dog.bio,
+            'photos': dog.photos.split(','),  # Convert comma-separated string to a list
+            'city': dog.city,
+            'state': dog.state,
+        })
+    return jsonify({'error': 'Dog not found'}), 404
 
 @api.route('/users/dog-profile', methods=['GET'])
 @jwt_required()
 def get_user_dog_profile():
     user_id = get_jwt_identity()
-
+    print(user_id,"user_id!!!!!!")
     # Find the dog profile associated with the authenticated user
     dog_profile = DogProfile.query.filter_by(user_id=user_id).first()
 

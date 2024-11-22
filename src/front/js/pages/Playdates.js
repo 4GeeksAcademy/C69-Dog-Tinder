@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 import '../../styles/Playdates.css'; 
 
@@ -7,7 +8,9 @@ const Playdates = () => {
   const [matches, setMatches] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);  // Track loading state
-
+  const token = localStorage.getItem("token")
+  const navigate = useNavigate();
+  if (token==null){navigate("/login")}
   useEffect(() => {
     // Fetch the user's matches
     const fetchMatches = async () => {
@@ -73,6 +76,7 @@ const Playdates = () => {
   if (loading) return <div>Loading...</div>;  // Show loading message
   if (error) return <div className="error-message">{error}</div>;  // Show error message
 
+  
   return (
     <div className="playdates-container">
       <h2>Your Matches</h2>

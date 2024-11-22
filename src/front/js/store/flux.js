@@ -1,4 +1,5 @@
 const getState = ({ getStore, getActions, setStore }) => {
+    const token=localStorage.getItem("token")
     return {
         store: {
             profiles: [],
@@ -7,7 +8,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             matches: [],
             loading: true, 
             userProfile: null,
-            userSettings: null,
+            userSettings: null
+            
         },
 
         actions: {
@@ -93,10 +95,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/users/dog-profile`, {
                         method: 'GET',
                         headers: {
-                            Authorization: `Bearer ${store.JWT_Token}`, // Usamos el token almacenado en el estado global
+                            Authorization: `Bearer ${token}`, // Usamos el token almacenado en el estado global
                         },
                     });
-            
+                    console.log(store.JWT_Token, "fetchDOGtoken")
                     if (!response.ok) {
                         const errorDetails = await response.json();
                         console.error('Server error response:', errorDetails);

@@ -9,6 +9,10 @@ const UserProfile = () => {
     const [editProfile, setEditProfile] = useState(null); 
     const [error, setError] = useState(null); // Maneja errores
     const navigate = useNavigate();
+    
+    const token = localStorage.getItem("token")
+    console.log(token,"token number")
+    if (token==null){navigate("/login")}
 
     const token = localStorage.getItem("token")
     console.log(token,"token number")
@@ -62,9 +66,10 @@ const UserProfile = () => {
     if (!editProfile) {
         return <p>Loading your dog's profile...</p>;
     }
-
+   
     return (
         <div className="user-profile-container">
+
             <div className="main-header">
     {store.dogProfile.photos.length > 0 && (
         <img
@@ -94,6 +99,7 @@ const UserProfile = () => {
         </button>
     </div>
 </div>
+
 
 <div className="dog-info">
     <div className="info-row">
