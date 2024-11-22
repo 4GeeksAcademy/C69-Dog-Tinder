@@ -10,6 +10,7 @@ import Navbar from "./component/navbar";
 import { Footer } from "./component/footer";
 import { SignUp } from './pages/SignUp';
 import DogProfileCreation from './pages/DogProfileCreation';
+import DogProfilePage from './pages/DogProfilePage';
 import { Login } from './pages/Login';
 import DogProfile from "./component/DogProfile";
 import DogSwipePage from "./pages/DogSwipePage";
@@ -23,6 +24,8 @@ const Layout = () => {
 
     // Obtener userId y dogProfile de store
     const userId = store.userProfile ? store.userProfile.id : null;
+    const token = localStorage.getItem("token")
+    console.log(token,"token number")
     const dogProfile = store.dogProfile || null; // Asigna datos reales o null si no están disponibles
 
     // Define funciones manejadoras
@@ -55,7 +58,7 @@ const Layout = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/dog-profile-creation" element={<DogProfileCreation />} />
-                    
+                    <Route path="/dog-profile/:dogId" element={<DogProfilePage />} />
                     {/* Usa datos dinámicos para DogProfile */}
 
                     <Route 
@@ -67,10 +70,10 @@ const Layout = () => {
     } 
 />
                     
-                    <Route path="/swipe" element={userId ? <DogSwipePage /> : <Navigate to="/login" />} />
-                    <Route path="/settings" element={userId ? <SettingsPage /> : <Navigate to="/login" />} />
-                    <Route path="/playdates/:id" element={userId ? <Playdates userId={userId} /> : <Navigate to="/login" />} />
-                    <Route path="/my-profile" element={userId ? <UserProfile /> : <Navigate to="/login" />} />
+                    <Route path="/swipe" element={ <DogSwipePage /> } />
+                    <Route path="/settings" element={ <SettingsPage /> } />
+                    <Route path="/playdates/:id" element={ <Playdates userId={userId} /> } />
+                    <Route path="/my-profile" element={ <UserProfile /> } />
                     <Route path="*" element={<h1>Not found!</h1>} />
                 </Routes>
                 <Footer />

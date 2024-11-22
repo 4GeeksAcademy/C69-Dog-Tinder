@@ -14,7 +14,9 @@ export const SettingsPage = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const token = localStorage.getItem("token")
 
+    if (token==null){navigate("/login")}
     // Fetch current settings when component mounts
     useEffect(() => {
         const fetchSettings = async () => {
@@ -78,7 +80,7 @@ export const SettingsPage = () => {
             setIsLoading(false);
         }
     };
-
+    
     return (
         <div className="settings-container">
             <h2>Settings</h2>
@@ -131,7 +133,10 @@ export const SettingsPage = () => {
             </form>
 
             <div className="back-button">
-                <button onClick={() => navigate('/')}>To Home</button>
+                <button onClick={() => {navigate('/')
+                localStorage.removeItem("token")
+                localStorage.removeItem("userId")
+                }}>Log Out</button>
             </div>
         </div>
     );
