@@ -1,134 +1,137 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Context } from '../store/appContext';
-import '../../styles/SettingsPage.css'; 
+import '../../styles/SettingsPage.css';
 import { useNavigate } from 'react-router-dom';
 
-const SettingsPage = () => {
-    const { store, actions } = useContext(Context);
-    const [ageYears, setAgeYears] = useState('');
-    const [ageMonths, setAgeMonths] = useState('');
-    const [breed, setBreed] = useState('');
-    const [distance, setDistance] = useState('');
-    const [temperment, setTemperment] = useState('');
-    const [lookingFor, setLookingFor] = useState('');
+export const SettingsPage = () => {
+    const { store, actions } = useContext(Context); // If you need to access any global state or actions
     const navigate = useNavigate();
 
-    const userId = store.userProfile?.userId;
+    // Define state for the settings form
+    const [minAge, setMinAge] = useState('');
+    const [maxAge, setMaxAge] = useState('');
+    const [maxDistance, setMaxDistance] = useState('');
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
+    // Fetch current settings when component mounts
     useEffect(() => {
-        if (userId) {
-            actions.fetchUserSettings(userId);
-        }
-    }, [userId]);
-
-    useEffect(() => {
-        if (store.userSettings) {
-            // Assume the age is returned in total months from the backend
-            const totalMonths = store.userSettings.age;
-            const years = Math.floor(totalMonths / 12);
-            const months = totalMonths % 12;
-
-            setAgeYears(years);  // Set years and months separately
-            setAgeMonths(months);
-            setBreed(store.userSettings.breed || '');
-            setDistance(store.userSettings.distance || '');
-            setTemperment(store.userSettings.temperment || '');
-            setLookingFor(store.userSettings.looking_for || '');
-        }
-    }, [store.userSettings]);
-
-    const handleSaveSettings = (e) => {
-        e.preventDefault();
-
-        // Convert years and months into total months before sending to the backend
-        const ageInMonths = parseInt(ageYears) * 12 + parseInt(ageMonths || 0);
-
-        const updatedSettings = {
-            age: ageInMonths,  // Send total months to the backend
-            breed,
-            distance,
-            temperment,
-            looking_for: lookingFor
+        const fetchSettings = async () => {
+            setIsLoading(true);
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${process.env.BACKEND_URL}/api/users/settings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setMinAge(data.min_age || '');
+                    setMaxAge(data.max_age || '');
+                    setMaxDistance(data.max_distance || '');
+                } else {
+                    setError(data.message || 'Failed to fetch settings');
+                }
+            } catch (err) {
+                setError('An error occurred while fetching the settings.');
+            } finally {
+                setIsLoading(false);
+            }
         };
 
-        actions.updateUserSettings(userId, updatedSettings);
-        navigate(-1);  // Navigate back after saving
+        fetchSettings();
+    }, []);
+
+    // Handle form submit
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setIsLoading(true);
+        setError(null);
+        setSuccess(false);
+
+        const token = localStorage.getItem('token');
+        const updatedSettings = { min_age: minAge, max_age: maxAge, max_distance: maxDistance };
+
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/users/settings`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedSettings),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setSuccess(true);
+            } else {
+                setError(data.message || 'Failed to update settings');
+            }
+        } catch (err) {
+            setError('An error occurred while updating the settings.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <div className="settings-container">
-            <div className="settings-box">
-                <div className="settings-header">
-                    <span className="settings-title">Discovery Settings</span>
-                    <button className="done-button" onClick={handleSaveSettings}>Done</button>
+            <h2>Settings</h2>
+
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">Settings updated successfully!</div>}
+
+            <form onSubmit={handleSubmit} className="settings-form">
+                <div className="input-box">
+                    <label htmlFor="min-age">Min Age</label>
+                    <input
+                        type="number"
+                        id="min-age"
+                        name="min_age"
+                        value={minAge}
+                        onChange={(e) => setMinAge(e.target.value)}
+                        required
+                    />
                 </div>
 
-                <form className="settings-form" onSubmit={handleSaveSettings}>
-                    <div className="form-group">
-                        <label htmlFor="ageYears">Age Preference (Years)</label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="ageYears"
-                            value={ageYears}
-                            onChange={(e) => setAgeYears(e.target.value)}
-                            min="0"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="ageMonths">Age Preference (Months)</label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="ageMonths"
-                            value={ageMonths}
-                            onChange={(e) => setAgeMonths(e.target.value)}
-                            min="0"
-                            max="11"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="breed">Breed Preference</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="breed"
-                            value={breed}
-                            onChange={(e) => setBreed(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="distance">Maximum Distance (miles)</label>
-                        <input
-                            type="number"
-                            className="form-control"
-                            id="distance"
-                            value={distance}
-                            onChange={(e) => setDistance(e.target.value)}
-                            min="0"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="temperment">Temperament</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="temperment"
-                            value={temperment}
-                            onChange={(e) => setTemperment(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="lookingFor">Looking For</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="lookingFor"
-                            value={lookingFor}
-                            onChange={(e) => setLookingFor(e.target.value)}
-                        />
-                    </div>
-                </form>
+                <div className="input-box">
+                    <label htmlFor="max-age">Max Age</label>
+                    <input
+                        type="number"
+                        id="max-age"
+                        name="max_age"
+                        value={maxAge}
+                        onChange={(e) => setMaxAge(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="input-box">
+                    <label htmlFor="max-distance">Max Distance (km)</label>
+                    <input
+                        type="number"
+                        id="max-distance"
+                        name="max_distance"
+                        value={maxDistance}
+                        onChange={(e) => setMaxDistance(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="input-box">
+                    <button type="submit" disabled={isLoading} className="submit-button">
+                        {isLoading ? 'Saving...' : 'Save Settings'}
+                    </button>
+                </div>
+            </form>
+
+            <div className="back-button">
+                <button onClick={() => navigate('/')}>To Home</button>
             </div>
         </div>
     );

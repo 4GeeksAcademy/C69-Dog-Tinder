@@ -10,6 +10,7 @@ class User(db.Model):
 
     dogs = db.relationship('DogProfile', backref='owner', lazy=True)
     likes = db.relationship('Like', backref='user', lazy=True)
+    settings = db.relationship("Settings", back_populates="user", uselist=False)
 
     def __repr__(self):
         return f"<User: {self.username}>"
@@ -46,10 +47,13 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 class Settings(db.Model):
-     id = db.Column(db.Integer, primary_key=True)
-     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-     age = db.Column(db.Integer)
-     breed=db.Column(db.String(200))
-     distance=db.Column(db.Integer)
-     temperment=db.Column(db.String(200))
-     looking_for=db.Column(db.String(200))
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    min_age = db.Column(db.Integer, nullable=False, default=0)  
+    max_age = db.Column(db.Integer, nullable=False, default=20)  
+    max_distance = db.Column(db.Integer, nullable=False, default=100)
+
+    user = db.relationship("User", back_populates="settings")   
+
+    def __repr__(self):
+        return f"<Settings(user_id={self.user_id}, min_age={self.min_age}, max_age={self.max_age}, max_distance={self.max_distance})>"

@@ -58,7 +58,9 @@ def add_dog_profile():
         age=data['age'],
         breed=data['breed'],
         bio=data.get('bio', ''),
-        photos=','.join(data['photos']) if 'photos' in data else None  # Store photos as comma-separated string
+        photos=','.join(data['photos']) if 'photos' in data else None,  
+        city=data.get('city', ''),  
+        state=data.get('state', '')
     )
     db.session.add(new_dog)
     db.session.commit()
@@ -155,34 +157,52 @@ def get_available_dogs():
     return jsonify(dog_list), 200
 
 
-@api.route('/users/<int:user_id>/settings', methods=['GET'])
+@api.route('/users/settings', methods=['GET'])
 @jwt_required()
-def get_user_settings(user_id):
-    user = User.query.get_or_404(user_id)
-    settings = Settings.query.filter_by(user_id=user.id).first()
+def get_user_settings():
+    current_user_id = get_jwt_identity()  # Get the current user from JWT
+    settings = Settings.query.filter_by(user_id=current_user_id).first()
+
+    # Handle case where settings might not be found for the user
+    if not settings:
+        return jsonify({"message": "Settings not found for the user"}), 404
+
     return jsonify({
-        "userId": user.id,
-        "age": settings.age,
-        "breed": settings.breed,
-        "distance": settings.distance,
-        "temperment": settings.temperment,
-        "looking_for": settings.looking_for,
+        "user_id": current_user_id,
+        "min_age": settings.min_age,
+        "max_age": settings.max_age,
+        "max_distance": settings.max_distance
     }), 200
 
 
-@api.route('/users/<int:user_id>/settings', methods=['PUT'])
+@api.route('/users/settings', methods=['PUT'])
 @jwt_required()
-def update_user_settings(user_id):
-    data = request.get_json()
-    settings = Settings.query.filter_by(user_id=user_id).first()
-    settings.age = data.get('age', settings.age)
-    settings.breed=data.get('breed', settings.breed)
-    settings.distance=data.get('distance', settings.distance)
-    settings.temperment=data.get('temperment', settings.temperment)
-    settings.looking_for=data.get('looking_for', settings.looking_for)
+def update_user_settings():
+    current_user_id = get_jwt_identity()  
+    
+    settings = Settings.query.filter_by(user_id=current_user_id).first()
+    
+    # If the user doesn't have existing settings, create a new one
+    if not settings:
+        settings = Settings(user_id=current_user_id)
+        db.session.add(settings)
 
+    data = request.get_json()
+    
+    settings.min_age = data.get('min_age', settings.min_age)
+    settings.max_age = data.get('max_age', settings.max_age)
+    settings.max_distance = data.get('max_distance', settings.max_distance)
+    
     db.session.commit()
-    return jsonify({"message": "Settings updated successfully"}), 200
+
+    return jsonify({
+        "message": "User settings updated successfully",
+        "userId": current_user_id,
+        "min_age": settings.min_age,
+        "max_age": settings.max_age,
+        "max_distance": settings.max_distance
+    }), 200
+
 
 
 @api.route('/swipe/right', methods=['POST'])
@@ -255,6 +275,7 @@ def send_message():
     
     # Get the data from the request
     data = request.get_json()
+    
     to_user_id = data.get('to_user_id')
     content = data.get('content')
 
@@ -272,7 +293,12 @@ def send_message():
         # Save the message to the database
         db.session.add(message)
         db.session.commit()
-        return jsonify({"msg": "Message sent successfully"}), 201
+        return jsonify({
+            "from_user_id": message.from_user_id,
+            "to_user_id": message.to_user_id,
+            "content": message.content,
+            "timestamp": message.timestamp.isoformat()  # Return timestamp in ISO format
+        }), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "Error sending message", "error": str(e)}), 500
