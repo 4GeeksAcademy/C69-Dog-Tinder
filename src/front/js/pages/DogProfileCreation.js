@@ -91,7 +91,7 @@ export function DogProfileCreation() {
         if (response.ok) {
             const result = await response.json();
             console.log(result.message);
-            navigate('/'); // Redirect to home or swipe page
+            navigate('/swipe'); 
         } else {
             const errorMsg = await response.json();
             setError(errorMsg.message || 'Dog profile creation failed');

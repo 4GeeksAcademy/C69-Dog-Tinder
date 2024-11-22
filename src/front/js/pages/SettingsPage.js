@@ -114,7 +114,7 @@ export const SettingsPage = () => {
                 </div>
 
                 <div className="input-box">
-                    <label htmlFor="max-distance">Max Distance (km)</label>
+                    <label htmlFor="max-distance">Max Distance (mi)</label>
                     <input
                         type="number"
                         id="max-distance"
