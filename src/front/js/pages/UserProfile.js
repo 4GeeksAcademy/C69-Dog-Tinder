@@ -14,10 +14,6 @@ const UserProfile = () => {
     console.log(token,"token number")
     if (token==null){navigate("/login")}
 
-    const token = localStorage.getItem("token")
-    console.log(token,"token number")
-    if (token==null){navigate("/login")}
-
     useEffect(() => {
         // Fetch the user's dog profile only if it's not already available
         if (!store.dogProfile) {

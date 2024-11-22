@@ -28,6 +28,11 @@ h2 {
     max-width: 400px;
 }
 
+form {
+    background: linear-gradient(135deg, rgba(180, 188, 223, 0.904), #f0f8ff);
+    align-content: center;
+}
+
 .input-box input {
     width: 100%;
     padding: 15px;
